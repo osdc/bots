@@ -1,0 +1,1 @@
+worker: osdc-bots 
