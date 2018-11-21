@@ -32,3 +32,8 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[metadata.heroku]
+  root-package = "github.com/vaibhavk/osdc-bots"
+  go-version = "1.10.4"
+  install = [ "./..." ]
