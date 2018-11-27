@@ -9,9 +9,6 @@ import (
 
 var bot *tbot.BotAPI
 
-func intro(ID int64){
-	bot.Send(tbot.NewMessage(ID, "Behold!I am the OSDC-Bot."))
-}
 func github(ID int64) {
 	bot.Send(tbot.NewMessage(ID, "https://github.com/osdc"))
 }
