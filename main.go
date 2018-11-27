@@ -38,6 +38,7 @@ func help(ID int64) {
 	/telegram - to get an invite link for OSDC's Telegram Group.
 	/website - to get the link of the official website of OSDC.
 	/blog - to get the link of the OSDC blog.
+	/irc - to find us on IRC.
 	To contribute to|modify this bot : https://github.com/vaibhavk/osdc-bots
 	`
 	bot.Send(tbot.NewMessage(ID, msg))
