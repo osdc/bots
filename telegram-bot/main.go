@@ -17,10 +17,25 @@ func telegram(ID int64) {
 	bot.Send(tbot.NewMessage(ID, "https://t.me/jiitosdc"))
 }
 
+func website(ID int64) {
+	bot.Send(tbot.NewMessage(ID, "https://osdc.surge.sh"))
+}
+
+func blog(ID int64) {
+	bot.Send(tbot.NewMessage(ID, "https://osdc.github.io/blog"))
+}
+
+func irc(ID int64){
+	bot.Send(tbot.NewMessage(ID,"Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki- https://github.com/osdc/community-committee/wiki/IRC ."))
+}
+
 func help(ID int64) {
 	msg := ` Use one of the following commands
-	/github - to get a link to OSDC's Github page
-	/telegram - to get an invite link for OSDC's Telegram Group
+	/github - to get a link to OSDC's Github page.
+	/telegram - to get an invite link for OSDC's Telegram Group.
+	/website - to get the link of the official website of OSDC.
+	/blog - to get the link of the OSDC blog.
+	/irc - to find us on IRC.
 	To contribute to|modify this bot : https://github.com/vaibhavk/osdc-bots
 	`
 	bot.Send(tbot.NewMessage(ID, msg))
@@ -43,15 +58,15 @@ func main() {
 	u := tbot.NewUpdate(0)
 	u.Timeout = 60
 	updates, _ := bot.GetUpdatesChan(u)
+	
 
 	for update := range updates {
 		if update.Message == nil {
 			continue
 		}
-
+		
 		ID := update.Message.Chat.ID
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
 			case "help":
@@ -60,6 +75,12 @@ func main() {
 				github(ID)
 			case "telegram":
 				telegram(ID)
+			case "website":
+				website(ID)
+			case "blog":
+				blog(ID)
+			case "irc":
+				irc(ID)
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
