@@ -46,7 +46,7 @@ func welcome(user string, ID int64) {
 	bot.Send(tbot.NewMessage(ID, "Welcome @"+user+", please introduce yourself"))
 }
 
-func kickUser(user int,ID int64) {
+func kickUser(user int, ID int64) {
 	bot.KickChatMember(tbot.KickChatMemberConfig{
 		ChatMemberConfig: tbot.ChatMemberConfig{
 			ChatID: ID,
@@ -102,9 +102,10 @@ func main() {
 		if update.Message.NewChatMembers != nil {
 			for _, user := range *(update.Message.NewChatMembers) {
 				if user.IsBot {
-					go kickUser(user.ID,ID)
+					go kickUser(user.ID, ID)
+				} else {
+					go welcome(user.String(), ID)
 				}
-				go welcome(user.String(), ID)
 			}
 		}
 	}
