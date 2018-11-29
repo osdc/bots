@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -25,8 +26,8 @@ func blog(ID int64) {
 	bot.Send(tbot.NewMessage(ID, "https://osdc.github.io/blog"))
 }
 
-func irc(ID int64){
-	bot.Send(tbot.NewMessage(ID,"Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki- https://github.com/osdc/community-committee/wiki/IRC ."))
+func irc(ID int64) {
+	bot.Send(tbot.NewMessage(ID, "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki- https://github.com/osdc/community-committee/wiki/IRC ."))
 }
 
 func help(ID int64) {
@@ -41,6 +42,9 @@ func help(ID int64) {
 	bot.Send(tbot.NewMessage(ID, msg))
 }
 
+func welcome(user string, ID int64) {
+	bot.Send(tbot.NewMessage(ID, "Welcome @"+user+", please introduce yourself"))
+}
 func start() {
 	var err error
 	bot, err = tbot.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
@@ -58,13 +62,12 @@ func main() {
 	u := tbot.NewUpdate(0)
 	u.Timeout = 60
 	updates, _ := bot.GetUpdatesChan(u)
-	
 
 	for update := range updates {
 		if update.Message == nil {
 			continue
 		}
-		
+
 		ID := update.Message.Chat.ID
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
@@ -87,14 +90,16 @@ func main() {
 		}
 		if update.Message.NewChatMembers != nil {
 			for _, user := range *(update.Message.NewChatMembers) {
-				message := "Welcome "
-				if user.UserName != "" {
-					message += "@" + user.UserName
-				} else {
-					message += user.FirstName
+				if user.IsBot {
+					bot.KickChatMember(tbot.KickChatMemberConfig{
+						ChatMemberConfig: tbot.ChatMemberConfig{
+							ChatID: chat.ID,
+							UserID: user.ID,
+						},
+						UntilDate: time.Now().Add(time.Hour * 24).Unix(),
+					})
 				}
-				message += ", please introduce yourself"
-				bot.Send(tbot.NewMessage(ID, message))
+				welcome(user.String(), ID)
 			}
 		}
 	}
