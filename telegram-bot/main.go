@@ -45,6 +45,17 @@ func help(ID int64) {
 func welcome(user string, ID int64) {
 	bot.Send(tbot.NewMessage(ID, "Welcome @"+user+", please introduce yourself"))
 }
+
+func kickUser(user int,ID int64) {
+	bot.KickChatMember(tbot.KickChatMemberConfig{
+		ChatMemberConfig: tbot.ChatMemberConfig{
+			ChatID: ID,
+			UserID: user,
+		},
+		UntilDate: time.Now().Add(time.Hour * 24).Unix(),
+	})
+}
+
 func start() {
 	var err error
 	bot, err = tbot.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
@@ -91,15 +102,9 @@ func main() {
 		if update.Message.NewChatMembers != nil {
 			for _, user := range *(update.Message.NewChatMembers) {
 				if user.IsBot {
-					bot.KickChatMember(tbot.KickChatMemberConfig{
-						ChatMemberConfig: tbot.ChatMemberConfig{
-							ChatID: chat.ID,
-							UserID: user.ID,
-						},
-						UntilDate: time.Now().Add(time.Hour * 24).Unix(),
-					})
+					go kickUser(user.ID,ID)
 				}
-				welcome(user.String(), ID)
+				go welcome(user.String(), ID)
 			}
 		}
 	}
