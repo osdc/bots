@@ -10,6 +10,10 @@ import (
 
 var bot *tbot.BotAPI
 
+func start(ID int64) {
+	bot.Send(tbot.NewMessage(ID, "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group: https://t.me/jiitosdc"))
+}
+
 func github(ID int64) {
 	bot.Send(tbot.NewMessage(ID, "https://github.com/osdc"))
 }
@@ -83,6 +87,9 @@ func main() {
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
+			
+			case "start":
+				start(ID)	
 			case "help":
 				help(ID)
 			case "github":
