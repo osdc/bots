@@ -48,13 +48,10 @@ func help(ID int64) {
 }
 
 func welcome(user tbot.User, ID int64) {
-	User := ""
-	if user.UserName != "" {
-		User += user.UserName
-	} else {
-		User += fmt.Sprintf("%v %v", user.ID, user.FirstName)
-	}
-	bot.Send(tbot.NewMessage(ID, "Welcome @"+User+", please introduce yourself"))
+	User := fmt.Sprintf("[%v](tg://user?id=%v)", user.FirstName, user.ID)
+	reply := tbot.NewMessage(ID, "**Welcome** "+User+", please introduce yourself")
+	reply.ParseMode = "markdown"
+	bot.Send(reply)
 }
 
 func kickUser(user int, ID int64) {
