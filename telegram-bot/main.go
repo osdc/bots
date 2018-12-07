@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -46,8 +47,14 @@ func help(ID int64) {
 	bot.Send(tbot.NewMessage(ID, msg))
 }
 
-func welcome(user string, ID int64) {
-	bot.Send(tbot.NewMessage(ID, "Welcome @"+user+", please introduce yourself"))
+func welcome(user tbot.User, ID int64) {
+	User := ""
+	if user.UserName != "" {
+		User += user.UserName
+	} else {
+		User += fmt.Sprintf("%v %v", user.ID, user.FirstName)
+	}
+	bot.Send(tbot.NewMessage(ID, "Welcome @"+User+", please introduce yourself"))
 }
 
 func kickUser(user int, ID int64) {
@@ -60,7 +67,7 @@ func kickUser(user int, ID int64) {
 	})
 }
 
-func start() {
+func main() {
 	var err error
 	bot, err = tbot.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
 	if err != nil {
@@ -70,10 +77,6 @@ func start() {
 	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
-}
-
-func main() {
-	start()
 	u := tbot.NewUpdate(0)
 	u.Timeout = 60
 	updates, _ := bot.GetUpdatesChan(u)
@@ -87,9 +90,9 @@ func main() {
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
-			
+
 			case "start":
-				start(ID)	
+				start(ID)
 			case "help":
 				help(ID)
 			case "github":
@@ -111,7 +114,7 @@ func main() {
 				if user.IsBot {
 					go kickUser(user.ID, ID)
 				} else {
-					go welcome(user.String(), ID)
+					go welcome(user, ID)
 				}
 			}
 		}
