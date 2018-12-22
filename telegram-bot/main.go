@@ -108,7 +108,7 @@ func main() {
 		}
 		if update.Message.NewChatMembers != nil {
 			for _, user := range *(update.Message.NewChatMembers) {
-				if user.IsBot {
+				if ( user.IsBot && user.UserName!= 'osdcbot'){
 					go kickUser(user.ID, ID)
 				} else {
 					go welcome(user, ID)
