@@ -24,7 +24,7 @@ func telegram(ID int64) {
 }
 
 func website(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://osdc.surge.sh"))
+	bot.Send(tbot.NewMessage(ID, "https://osdc.netlify.com"))
 }
 
 func blog(ID int64) {
