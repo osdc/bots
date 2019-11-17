@@ -107,7 +107,7 @@ func memberdetails(ID int64, userid int) bool {
 		ChatID: ID,
 		UserID: userid,
 	})
-	if response.Status == "creator" || response.Status == "admin" {
+	if response.IsCreator() || response.IsAdministrator() {
 		return true
 	} else {
 		return false
