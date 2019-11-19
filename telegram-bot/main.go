@@ -15,31 +15,87 @@ import (
 var bot *tbot.BotAPI
 
 func start(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group: https://t.me/jiitosdc"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://t.me/jiitosdc"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group:")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func github(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://github.com/osdc"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Github", "https://github.com/osdc"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Checkout our OSDC projects and feel free to contribute!")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func telegram(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://t.me/jiitosdc"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://t.me/jiitosdc"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Join our telegram group:")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func twitter(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://twitter.com/osdcjiit"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://twitter.com/osdcjiit"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Check us out on twitter")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func website(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://osdc.netlify.com"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://osdc.netlify.com"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Website:")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func blog(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://osdc.github.io/blog"))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://osdc.github.io/blog"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Blogs written by the folks at the Open Source Developers' Club who live in and around JIIT, Noida, India.")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 func irc(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki- https://github.com/osdc/community-committee/wiki/IRC ."))
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL("Click Here", "https://github.com/osdc/community-committee/wiki/IRC"),
+		),
+	)
+
+	msg := tbot.NewMessage(ID, "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki-")
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 //scraping xkcd strip URL from its website with the help of a random generated integer and then sending it as a photo using NewPhotoShare Telegram API method.
