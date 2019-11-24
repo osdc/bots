@@ -14,79 +14,13 @@ import (
 
 var bot *tbot.BotAPI
 
-func start(ID int64) {
+func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string){
 	var button = tbot.NewInlineKeyboardMarkup(
 		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://t.me/jiitosdc"),
+			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
 		),
 	)
-	msg := tbot.NewMessage(ID, "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group:")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func github(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Github", "https://github.com/osdc"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Checkout our OSDC projects and feel free to contribute!")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func telegram(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://t.me/jiitosdc"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Join our telegram group:")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func twitter(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://twitter.com/osdcjiit"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Check us out on twitter")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func website(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://osdc.netlify.com"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Website:")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func blog(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://osdcblog.netlify.com/"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Blogs written by the folks at the Open Source Developers' Club who live in and around JIIT, Noida, India.")
-	msg.ReplyMarkup = button
-	bot.Send(msg)
-}
-
-func irc(ID int64) {
-	var button = tbot.NewInlineKeyboardMarkup(
-		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL("Click Here", "https://github.com/osdc/community-committee/wiki/IRC"),
-		),
-	)
-	msg := tbot.NewMessage(ID, "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki-")
+	msg := tbot.NewMessage(ID, MessageText)
 	msg.ReplyMarkup = button
 	bot.Send(msg)
 }
@@ -197,21 +131,21 @@ func main() {
 			switch update.Message.Command() {
 
 			case "start":
-				start(ID)
+				ButtonLinks(ID, "Click Here", "https://t.me/jiitosdc", "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group:")
 			case "help":
 				help(ID)
 			case "github":
-				github(ID)
+				ButtonLinks(ID, "Github", "https://github.com/osdc", "Checkout our OSDC projects and feel free to contribute!")
 			case "telegram":
-				telegram(ID)
+				ButtonLinks(ID, "Click Here", "https://t.me/jiitosdc", "Join our telegram group:")
 			case "twitter":
-				twitter(ID)
+				ButtonLinks(ID, "Click Here", "https://twitter.com/osdcjiit", "Check us out on twitter")
 			case "website":
-				website(ID)
+				ButtonLinks(ID, "Click Here", "https://osdc.netlify.com", "Website:")
 			case "blog":
-				blog(ID)
+				ButtonLinks(ID, "Click Here", "https://osdcblog.netlify.com/", "Blogs written by the folks at the Open Source Developers' Club who live in and around JIIT, Noida, India.")
 			case "irc":
-				irc(ID)
+				ButtonLinks(ID, "Click Here", "https://github.com/osdc/community-committee/wiki/IRC", "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki-")
 			case "xkcd":
 				xkcd(ID)
 			case "dlmeetups":
