@@ -14,32 +14,15 @@ import (
 
 var bot *tbot.BotAPI
 
-func start(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group: https://t.me/jiitosdc"))
-}
-
-func github(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://github.com/osdc"))
-}
-
-func telegram(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://t.me/jiitosdc"))
-}
-
-func twitter(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://twitter.com/osdcjiit"))
-}
-
-func website(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://osdc.netlify.com"))
-}
-
-func blog(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "https://osdc.github.io/blog"))
-}
-
-func irc(ID int64) {
-	bot.Send(tbot.NewMessage(ID, "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki- https://github.com/osdc/community-committee/wiki/IRC ."))
+func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string){
+	var button = tbot.NewInlineKeyboardMarkup(
+		tbot.NewInlineKeyboardRow(
+			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
+		),
+	)
+	msg := tbot.NewMessage(ID, MessageText)
+	msg.ReplyMarkup = button
+	bot.Send(msg)
 }
 
 //scraping xkcd strip URL from its website with the help of a random generated integer and then sending it as a photo using NewPhotoShare Telegram API method.
@@ -148,21 +131,21 @@ func main() {
 			switch update.Message.Command() {
 
 			case "start":
-				start(ID)
+				ButtonLinks(ID, "Click Here", "https://t.me/jiitosdc", "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group:")
 			case "help":
 				help(ID)
 			case "github":
-				github(ID)
+				ButtonLinks(ID, "Github", "https://github.com/osdc", "Checkout our OSDC projects and feel free to contribute!")
 			case "telegram":
-				telegram(ID)
+				ButtonLinks(ID, "Click Here", "https://t.me/jiitosdc", "Join our telegram group:")
 			case "twitter":
-				twitter(ID)
+				ButtonLinks(ID, "Click Here", "https://twitter.com/osdcjiit", "Check us out on twitter")
 			case "website":
-				website(ID)
+				ButtonLinks(ID, "Click Here", "https://osdc.netlify.com", "Website:")
 			case "blog":
-				blog(ID)
+				ButtonLinks(ID, "Click Here", "https://osdcblog.netlify.com/", "Blogs written by the folks at the Open Source Developers' Club who live in and around JIIT, Noida, India.")
 			case "irc":
-				irc(ID)
+				ButtonLinks(ID, "Click Here", "https://github.com/osdc/community-committee/wiki/IRC", "Join us on IRC server of Freenode at #jiit-lug. To get started refer our IRC wiki-")
 			case "xkcd":
 				xkcd(ID)
 			case "dlmeetups":
