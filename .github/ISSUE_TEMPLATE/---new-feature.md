@@ -1,3 +1,12 @@
+---
+name: New Feature
+about: "Any issue you want to suggest or maybe implement."
+title: ''
+labels: enhancement
+assignees: ''
+
+---
+
 ## New feature
 <!-- Details about the new feature -->
 
