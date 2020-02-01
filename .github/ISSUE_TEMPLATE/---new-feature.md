@@ -1,5 +1,5 @@
 ---
-name: New Feature
+name: "\U0001f680 New Feature"
 about: "Any issue you want to suggest or maybe implement."
 title: ''
 labels: enhancement
