@@ -175,12 +175,12 @@ func main() {
 			case "addmeetup":
 				check := memberdetails(ID, update.Message.From.ID)
 				if check == true {
-					addmeetup(ID, update.Message.Text, mongo.Client{})
+					addmeetup(ID, update.Message.Text, *client)
 				} else {
 					bot.Send(tbot.NewMessage(ID, "Sorry, only admins can add the details of next meetup."))
 				}
 			case "nextmeetup":
-				nextmeetup(ID, mongo.Client{})
+				nextmeetup(ID, *client)
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}

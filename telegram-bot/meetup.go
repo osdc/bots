@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -34,8 +33,9 @@ type meetuplist struct {
 
 //struct to keep track of OSDC meetups using a JSON file
 type meetupdata struct {
-	Name string
-	Date string
+	Name  string
+	Date  string
+	Venue string
 }
 
 //fetching details of meetup of the group's url from Meetup API
@@ -62,19 +62,23 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 	collection := client.Database("test").Collection("meetups")
 
 	args := strings.Fields(msgtext)
-	if len(args) == 3 {
+	if len(args) == 4 {
 		data := meetupdata{
-			Name: args[1],
-			Date: args[2],
+			Name:  args[1],
+			Date:  args[2],
+			Venue: args[3],
 		}
-		insertResult, err := collection.InsertOne(context.TODO(), data)
+		_, err := collection.DeleteMany(context.TODO(), bson.D{{}})
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+		_, err = collection.InsertOne(context.TODO(), data)
+		if err != nil {
+			log.Fatal(err)
+		}
 		bot.Send(tbot.NewMessage(ID, "Meetup added successfully."))
 	} else {
-		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <Date>"))
+		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <Date> <Venue>"))
 	}
 }
 
@@ -86,6 +90,6 @@ func nextmeetup(ID int64, client mongo.Client) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	nxtmeetupdata := "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + result.Date
+	nxtmeetupdata := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + result.Date + "\n" + "Venue -" + result.Venue
 	bot.Send(tbot.NewMessage(ID, nxtmeetupdata))
 }
