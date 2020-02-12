@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -10,11 +11,14 @@ import (
 
 	"github.com/anaskhan96/soup"
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var bot *tbot.BotAPI
 
-func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string){
+func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string) {
 	var button = tbot.NewInlineKeyboardMarkup(
 		tbot.NewInlineKeyboardRow(
 			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
@@ -120,6 +124,24 @@ func main() {
 	u := tbot.NewUpdate(0)
 	u.Timeout = 60
 	updates, _ := bot.GetUpdatesChan(u)
+	// Set client options
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Check the connection
+	err = client.Ping(context.TODO(), nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Connected to MongoDB!")
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -153,12 +175,12 @@ func main() {
 			case "addmeetup":
 				check := memberdetails(ID, update.Message.From.ID)
 				if check == true {
-					addmeetup(ID, update.Message.Text)
+					addmeetup(ID, update.Message.Text, mongo.Client{})
 				} else {
 					bot.Send(tbot.NewMessage(ID, "Sorry, only admins can add the details of next meetup."))
 				}
 			case "nextmeetup":
-				nextmeetup(ID)
+				nextmeetup(ID, mongo.Client{})
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}

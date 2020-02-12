@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +10,8 @@ import (
 	"strings"
 
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var finallist string //variable to store final list of meetups
@@ -31,8 +34,8 @@ type meetuplist struct {
 
 //struct to keep track of OSDC meetups using a JSON file
 type meetupdata struct {
-	Name string `json: "Name"`
-	Date string `json: "Date"`
+	Name string
+	Date string
 }
 
 //fetching details of meetup of the group's url from Meetup API
@@ -54,15 +57,21 @@ func getMeetups(url string) {
 }
 
 //Slicing the arguments (title & date of next meetup) from message text and writing them to a json file.
-func addmeetup(ID int64, msgtext string) {
+func addmeetup(ID int64, msgtext string, client mongo.Client) {
+	// Get a handle for your collection
+	collection := client.Database("test").Collection("meetups")
+
 	args := strings.Fields(msgtext)
 	if len(args) == 3 {
 		data := meetupdata{
 			Name: args[1],
 			Date: args[2],
 		}
-		file, _ := json.MarshalIndent(data, "", " ")
-		_ = ioutil.WriteFile("meetups.json", file, 0644)
+		insertResult, err := collection.InsertOne(context.TODO(), data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 		bot.Send(tbot.NewMessage(ID, "Meetup added successfully."))
 	} else {
 		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <Date>"))
@@ -70,11 +79,13 @@ func addmeetup(ID int64, msgtext string) {
 }
 
 //fetching the details (Next Meetup Title & Date) from the JSON file
-func nextmeetup(ID int64) {
-	file, _ := ioutil.ReadFile("meetups.json")
-	data := meetupdata{}
-	_ = json.Unmarshal([]byte(file), &data)
-	fmt.Println(data.Name)
-	nxtmeetupdata := "Title -" + "\t" + data.Name + "\n" + "Date -" + "\t" + data.Date
+func nextmeetup(ID int64, client mongo.Client) {
+	collection := client.Database("test").Collection("meetups")
+	var result meetupdata
+	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+	nxtmeetupdata := "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + result.Date
 	bot.Send(tbot.NewMessage(ID, nxtmeetupdata))
 }
