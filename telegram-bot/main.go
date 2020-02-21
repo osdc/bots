@@ -14,7 +14,7 @@ import (
 
 var bot *tbot.BotAPI
 
-func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string){
+func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string) {
 	var button = tbot.NewInlineKeyboardMarkup(
 		tbot.NewInlineKeyboardRow(
 			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
@@ -79,9 +79,38 @@ func dlmeetups(ID int64) {
 
 func welcome(user tbot.User, ID int64) {
 	User := fmt.Sprintf("[%v](tg://user?id=%v)", user.FirstName, user.ID)
-	reply := tbot.NewMessage(ID, "**Welcome** "+User+", please introduce yourself")
-	reply.ParseMode = "markdown"
-	bot.Send(reply)
+	var welcomeSlice = make([]string, 0)
+	welcomeSlice = append(welcomeSlice,
+		fmt.Sprintf("Welcome %s, Welcome to OSDC, enjoy your stay :) Leave: Hopefully you come back to OSDC", User),
+		fmt.Sprintf("%s just slid into the server.", User),
+		fmt.Sprintf("Welcome, %s. We were expecting you ( ͡° ͜ʖ ͡°)", User),
+		fmt.Sprintf("%s just showed up. Hold my beer.", User),
+		fmt.Sprintf("%s joined your party.", User),
+		fmt.Sprintf("Roses are red, Violets are blue %s joined the chat with you.", User),
+		fmt.Sprintf("%s just joined. Can I get a heal.", User),
+		fmt.Sprintf("%s is here as the prophecy foretold.", User),
+		fmt.Sprintf("%s has joined the battle bus.", User),
+		fmt.Sprintf("Welcome %s. Leave your weapons by the door.", User),
+		fmt.Sprintf("%s has arrived. Party's over.", User),
+		fmt.Sprintf("Welcome %s. We hope you brought pizza.", User),
+		fmt.Sprintf("Swoooosh. %s just landed.", User),
+		fmt.Sprintf("Is it %s you are looking for?", User),
+		fmt.Sprintf("Ready player %s?", User),
+		fmt.Sprintf("%s just joined. Everyone, look busy.", User),
+		fmt.Sprintf("Brace yourselves. %s just joined the chat.", User),
+	)
+	rand.Seed(time.Now().UnixNano())
+	min := 0
+	max := len(welcomeSlice) - 1
+	randomNum := (rand.Intn(max-min+1) + min)
+	var welcomeMessage = welcomeSlice[randomNum]
+	reply1 := tbot.NewMessage(ID, welcomeMessage)
+	reply1.ParseMode = "markdown"
+	const introString = "Please introduce yourself."
+	reply2 := tbot.NewMessage(ID, introString)
+	reply2.ParseMode = "markdown"
+	bot.Send(reply1)
+	bot.Send(reply2)
 }
 
 //extracts the details of the user who sent the message to check whether the user is creator/admin. Returns true in this case else false.
