@@ -43,7 +43,7 @@ func savenote(ID int64, msgtext string, client mongo.Client) {
 	}
 }
 
-func fetchnotes(ID int64, client mongo.Client) {
+func fetchallnotes(ID int64, client mongo.Client) {
 	saved := "List of Saved Notes are: "
 	collection := client.Database("test").Collection("SavedNote")
 	ctx := context.Background()
@@ -65,4 +65,18 @@ func fetchnotes(ID int64, client mongo.Client) {
 		}
 	}
 	bot.Send(tbot.NewMessage(ID, saved))
+}
+
+func fetchnote(ID int64, msgtext string, client mongo.Client) {
+	collection := client.Database("test").Collection("SavedNote")
+	var result notesData
+	_ = collection.FindOne(context.TODO(), bson.D{{"name", msgtext}}).Decode(&result)
+	log.Print(result.Name)
+	if (notesData{}) != result {
+		message := "*" + result.Name + "* : " + result.Content
+		bot.Send(tbot.NewMessage(ID, message))
+	} else {
+		bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+	}
+
 }

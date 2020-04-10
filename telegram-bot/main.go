@@ -215,9 +215,9 @@ func main() {
 					bot.Send(tbot.NewMessage(ID, "Sorry, only admins can add the details of next meetup."))
 				}
 			case "notes":
-				fetchnotes(ID, *client)
+				fetchallnotes(ID, *client)
 			default:
-				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+				fetchnote(ID, update.Message.Command(), *client)
 			}
 		}
 		if update.Message.NewChatMembers != nil {
