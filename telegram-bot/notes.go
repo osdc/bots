@@ -73,10 +73,18 @@ func fetchnote(ID int64, msgtext string, client mongo.Client) {
 	_ = collection.FindOne(context.TODO(), bson.D{{"name", msgtext}}).Decode(&result)
 	log.Print(result.Name)
 	if (notesData{}) != result {
-		message := "*" + result.Name + "* : " + result.Content
-		bot.Send(tbot.NewMessage(ID, message))
+		message := "<b>" + result.Name + "</b> : " + result.Content
+		messageconfig := tbot.MessageConfig{
+			BaseChat: tbot.BaseChat{
+				ChatID:           ID,
+				ReplyToMessageID: 0,
+			},
+			Text:                  message,
+			ParseMode:             "html",
+			DisableWebPagePreview: true,
+		}
+		bot.Send(messageconfig)
 	} else {
 		bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 	}
-
 }
