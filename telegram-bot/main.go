@@ -216,6 +216,8 @@ func main() {
 				}
 			case "notes":
 				fetchallnotes(ID, *client)
+			case "deletenote":
+				deletenote(ID, update.Message.Text, *client)
 			default:
 				fetchnote(ID, update.Message.Command(), *client)
 			}

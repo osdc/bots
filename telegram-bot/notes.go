@@ -22,7 +22,7 @@ func savenote(ID int64, msgtext string, client mongo.Client) {
 	args := strings.Fields(msgtext)
 
 	var check notesData
-	_ = collection.FindOne(context.TODO(), bson.D{{"name", args[1]}}).Decode(&check)
+	_ = collection.FindOne(context.TODO(), bson.M{"name": args[1]}).Decode(&check)
 	if (notesData{}) == check {
 		if len(args) >= 3 {
 			data := notesData{
@@ -70,7 +70,7 @@ func fetchallnotes(ID int64, client mongo.Client) {
 func fetchnote(ID int64, msgtext string, client mongo.Client) {
 	collection := client.Database("test").Collection("SavedNote")
 	var result notesData
-	_ = collection.FindOne(context.TODO(), bson.D{{"name", msgtext}}).Decode(&result)
+	_ = collection.FindOne(context.TODO(), bson.M{"name": msgtext}).Decode(&result)
 	log.Print(result.Name)
 	if (notesData{}) != result {
 		message := "<b>" + result.Name + "</b> : " + result.Content
@@ -86,5 +86,20 @@ func fetchnote(ID int64, msgtext string, client mongo.Client) {
 		bot.Send(messageconfig)
 	} else {
 		bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+	}
+}
+
+func deletenote(ID int64, msgtext string, client mongo.Client) {
+	collection := client.Database("test").Collection("SavedNote")
+	args := strings.Fields(msgtext)
+	result, err := collection.DeleteOne(context.TODO(), bson.M{"name": args[1]})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(result)
+	if result.DeletedCount == 0 {
+		bot.Send(tbot.NewMessage(ID, "Note doesn't exist."))
+	} else {
+		bot.Send(tbot.NewMessage(ID, "Note with name "+args[1]+" deleted"))
 	}
 }
