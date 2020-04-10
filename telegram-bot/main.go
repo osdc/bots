@@ -207,6 +207,13 @@ func main() {
 				}
 			case "nextmeetup":
 				nextmeetup(ID, *client)
+			case "savenote":
+				check := memberdetails(ID, update.Message.From.ID)
+				if check == true {
+					savenote(ID, update.Message.Text, *client)
+				} else {
+					bot.Send(tbot.NewMessage(ID, "Sorry, only admins can add the details of next meetup."))
+				}
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
