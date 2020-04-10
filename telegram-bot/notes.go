@@ -21,19 +21,25 @@ func savenote(ID int64, msgtext string, client mongo.Client) {
 
 	args := strings.Fields(msgtext)
 
-	if len(args) >= 3 {
-		data := notesData{
-			Name:    args[1],
-			Content: strings.Join(args[2:], " "),
+	var check notesData
+	_ = collection.FindOne(context.TODO(), bson.D{{"name", args[1]}}).Decode(&check)
+	if (notesData{}) == check {
+		if len(args) >= 3 {
+			data := notesData{
+				Name:    args[1],
+				Content: strings.Join(args[2:], " "),
+			}
+			log.Print(data)
+			_, err := collection.InsertOne(context.TODO(), data)
+			if err != nil {
+				log.Fatal(err)
+			}
+			bot.Send(tbot.NewMessage(ID, "Note added successfully."))
+		} else {
+			bot.Send(tbot.NewMessage(ID, "Please provide the details of note in this format - /save <Title> <Content>"))
 		}
-		log.Print(data)
-		_, err := collection.InsertOne(context.TODO(), data)
-		if err != nil {
-			log.Fatal(err)
-		}
-		bot.Send(tbot.NewMessage(ID, "Note added successfully."))
 	} else {
-		bot.Send(tbot.NewMessage(ID, "Please provide the details of note in this format - /save <Title> <Content>"))
+		bot.Send(tbot.NewMessage(ID, "Note with the same name already exists."))
 	}
 }
 
@@ -54,7 +60,7 @@ func fetchnotes(ID int64, client mongo.Client) {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				saved = saved + "\n #" + result.Name
+				saved = saved + "\n /" + result.Name
 			}
 		}
 	}
