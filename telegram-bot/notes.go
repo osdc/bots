@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -34,4 +35,28 @@ func savenote(ID int64, msgtext string, client mongo.Client) {
 	} else {
 		bot.Send(tbot.NewMessage(ID, "Please provide the details of note in this format - /save <Title> <Content>"))
 	}
+}
+
+func fetchnotes(ID int64, client mongo.Client) {
+	saved := "List of Saved Notes are: "
+	collection := client.Database("test").Collection("SavedNote")
+	ctx := context.Background()
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		log.Fatal(err)
+		defer cursor.Close(ctx)
+	} else {
+		// iterate over docs using Next()
+		for cursor.Next(ctx) {
+			// Declare a result BSON object
+			var result notesData
+			err := cursor.Decode(&result)
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				saved = saved + "\n #" + result.Name
+			}
+		}
+	}
+	bot.Send(tbot.NewMessage(ID, saved))
 }
