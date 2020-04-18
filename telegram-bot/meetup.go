@@ -3,11 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/go-co-op/gocron"
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -34,7 +38,7 @@ type meetuplist struct {
 //struct to keep track of OSDC meetups using a JSON file
 type meetupdata struct {
 	Name  string
-	Date  string
+	Date  time.Time
 	Venue string
 }
 
@@ -62,13 +66,34 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 	collection := client.Database("test").Collection("meetups")
 
 	args := strings.Fields(msgtext)
-	if len(args) == 4 {
+	if len(args) == 8 {
+		//converting the arguments into integers to pass them to time.Date
+		dd, err := strconv.Atoi(args[2])
+		if err != nil {
+			log.Fatalln(err)
+		}
+		mm, err := strconv.Atoi(args[3])
+		if err != nil {
+			log.Fatalln(err)
+		}
+		yy, err := strconv.Atoi(args[4])
+		if err != nil {
+			log.Fatalln(err)
+		}
+		hh, err := strconv.Atoi(args[5])
+		if err != nil {
+			log.Fatalln(err)
+		}
+		min, err := strconv.Atoi(args[6])
+		if err != nil {
+			log.Fatalln(err)
+		}
 		data := meetupdata{
 			Name:  args[1],
-			Date:  args[2],
-			Venue: args[3],
+			Date:  time.Date(yy, time.Month(mm), dd, hh, min, 0, 0, time.Local),
+			Venue: args[7],
 		}
-		_, err := collection.DeleteMany(context.TODO(), bson.D{{}})
+		_, err = collection.DeleteMany(context.TODO(), bson.D{{}})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -77,8 +102,13 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 			log.Fatal(err)
 		}
 		bot.Send(tbot.NewMessage(ID, "Meetup added successfully."))
+		nextmeetup(ID, client)
+		remindTime := fmt.Sprintf("%d:%d:00", hh-1, min) //making a formatted string from time to pass it to s.At()
+		s1 := gocron.NewScheduler(time.Local)
+		s1.Every(1).Day().At(remindTime).Do(reminder, ID, client, s1) //calls the reminder function
+		s1.Start()                                                    //starts the scheduler
 	} else {
-		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <Date> <Venue>"))
+		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <DD MM YY Hr Min> <Venue> \nTIME IN 24Hr FORMAT"))
 	}
 }
 
@@ -90,6 +120,23 @@ func nextmeetup(ID int64, client mongo.Client) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	nxtmeetupdata := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + result.Date + "\n" + "Venue -" + result.Venue
-	bot.Send(tbot.NewMessage(ID, nxtmeetupdata))
+	timeString := result.Date.Local().Format("Mon Jan _2 15:04:05 2006")
+	nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Venue - " + result.Venue
+	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+}
+
+func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
+	collection := client.Database("test").Collection("meetups")
+	var result meetupdata
+	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+	timeString := result.Date.Local().Format("Mon Jan _2 15:04:05 2006") //records time in the specified format
+	nxtMeetupData := "MEETUP REMINDER!" + "\n" + "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Venue - " + result.Venue
+	if !time.Now().Local().Before(result.Date) {
+		s1.Clear() //stops the scheduler when meetup is done
+	} else {
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+	}
 }
