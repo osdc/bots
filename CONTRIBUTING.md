@@ -68,6 +68,20 @@ $ git push origin "Name-of-the-branch-from-step-1"
 ```
 6. Then, go to your forked repository and make a Pull Request 🎉. Refer [this](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) for more details.
 
+## Resources
+
+### Git and Github
+
+* Egghead Course on [How to Contribute to an Open Source Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github) by Kent C. Dodds.
+* [Learn Git](https://www.codecademy.com/learn/learn-git) by Codecademy
+* [Github Learning Lab](https://lab.github.com/)
+
+### Golang
+
+* [A Tour of Go](https://tour.golang.org/)
+* [Learn Go](https://www.codecademy.com/learn/learn-go) by Codecademy
+* [Gophercises](https://gophercises.com/)
+
 ## Chat
 
 * Feel free to check out the `#jiit-lug` channel on IRC or on our Telegram channel. We are always happy to help out!
