@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"regexp"
 	"strings"
 
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -11,23 +12,29 @@ import (
 )
 
 type notesData struct {
-	Name    string
-	Content string
+	Name        string
+	Description string
+	LinkTitle   string
+	Link        string
 }
 
 func savenote(ID int64, msgtext string, client mongo.Client) {
 
 	collection := client.Database("test").Collection("SavedNote")
-
-	args := strings.Fields(msgtext)
+	r, _ := regexp.Compile(`\[(.*?)\]\((.+?)\)`)
+	var button = r.FindStringSubmatch(msgtext)
+	var text = r.ReplaceAllString(msgtext, "")
+	args := strings.Fields(text)
 
 	var check notesData
 	_ = collection.FindOne(context.TODO(), bson.M{"name": args[1]}).Decode(&check)
 	if (notesData{}) == check {
 		if len(args) >= 3 {
 			data := notesData{
-				Name:    args[1],
-				Content: strings.Join(args[2:], " "),
+				Name:        args[1],
+				Description: strings.Join(args[2:], " "),
+				LinkTitle:   button[1],
+				Link:        button[2],
 			}
 			log.Print(data)
 			_, err := collection.InsertOne(context.TODO(), data)
@@ -75,17 +82,7 @@ func fetchnote(ID int64, msgtext string, client mongo.Client) {
 	_ = collection.FindOne(context.TODO(), bson.M{"name": args[1]}).Decode(&result)
 	log.Print(result.Name)
 	if (notesData{}) != result {
-		message := "<b>" + result.Name + "</b> : " + result.Content
-		messageconfig := tbot.MessageConfig{
-			BaseChat: tbot.BaseChat{
-				ChatID:           ID,
-				ReplyToMessageID: 0,
-			},
-			Text:                  message,
-			ParseMode:             "html",
-			DisableWebPagePreview: true,
-		}
-		bot.Send(messageconfig)
+		ButtonLinks(ID, result.LinkTitle, result.Link, result.Description)
 	} else {
 		bot.Send(tbot.NewMessage(ID, "No note saved with that name."))
 	}
