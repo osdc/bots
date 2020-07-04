@@ -67,12 +67,22 @@ func fetchallnotes(ID int64, client mongo.Client) {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				saved = saved + "\n" + result.Name
+				saved = saved + "\n&#9679; <code>" + result.Name + "</code>"
 			}
 		}
 	}
-	saved = saved + "\n* Use /fetchnote _note-name_ to view the note."
-	bot.Send(tbot.NewMessage(ID, saved))
+	saved = saved + "\n\n<i>Use /fetchnote <code>note-name</code> to view the note.</i>"
+	messageconfig := tbot.MessageConfig{
+		BaseChat: tbot.BaseChat{
+			ChatID:           ID,
+			ReplyToMessageID: 0,
+		},
+		Text:                  saved,
+		ParseMode:             "html",
+		DisableWebPagePreview: true,
+	}
+	bot.Send(messageconfig)
+	// bot.Send(tbot.NewMessage(ID, saved))
 }
 
 func fetchnote(ID int64, msgtext string, client mongo.Client) {
