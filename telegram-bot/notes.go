@@ -60,10 +60,11 @@ func fetchallnotes(ID int64, client mongo.Client) {
 			if err != nil {
 				log.Fatal(err)
 			} else {
-				saved = saved + "\n /" + result.Name
+				saved = saved + "\n" + result.Name
 			}
 		}
 	}
+	saved = saved + "\n* Use /fetchnote _note-name_ to view the note."
 	bot.Send(tbot.NewMessage(ID, saved))
 }
 
