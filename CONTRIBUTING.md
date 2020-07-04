@@ -1,5 +1,5 @@
 
-# Contributing 🔥✨
+# Contributing to the bot 🔥✨
 
 Contributions are always welcome, no matter how large or small!🙂
 
@@ -14,7 +14,7 @@ In order to contribute, you need to have an account on Github. Go to 👉 https:
 
 ### Install Go
 
-* The Telegram Bot is written in Go. Thus, in order to install Go, follow the doc here 👉 https://golang.org/doc/install
+* The Telegram Bot🤖 is written in Go. Thus, in order to install Go, follow the doc here 👉 https://golang.org/doc/install
 
 ## Fork and clone this repository
 
@@ -37,7 +37,7 @@ $ ls
 
 ## Setting up the bot
 
-1. Ping [Botfather](telegram.me/botfather) on Telegram and make your instance of OSDC-Bot bot by selecting `/newbot` from the optionsprovides.
+1. Ping [Botfather](telegram.me/botfather) on Telegram and make your instance of OSDC-Bot 🤖 bot by selecting `/newbot` from the options provided.
 2. Copy the `TELEGRAM_TOKEN` provided by Botfather.
 3. Make sure you have followed all the above steps and are in the `telegram-bot` directory.
 4. If you have installed golang, run `go build .`
