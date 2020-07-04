@@ -16,6 +16,10 @@ In order to contribute, you need to have an account on Github. Go to 👉 https:
 
 * The Telegram Bot🤖 is written in Go. Thus, in order to install Go, follow the doc here 👉 https://golang.org/doc/install
 
+### Install MongoDB
+
+* The bot uses MongoDB as its database. In order to install MongoDB, refer the guide here 👉 https://docs.mongodb.com/manual/installation/#mongodb-community-edition-installation-tutorials
+
 ## Fork and clone this repository
 
 * Fork this repository using the button in the top-right corner of the page. Refer https://docs.github.com/en/github/getting-started-with-github/fork-a-repo for more details.
