@@ -2,7 +2,7 @@
 
 Contributions are always welcome, no matter how large or small!
 
-## Create an account on Github
+### Create an account on Github
 
 In order to contribute, you need to have an account on Github. Go to https://github.com to create an account.
 
@@ -11,7 +11,7 @@ In order to contribute, you need to have an account on Github. Go to https://git
 * In order to contribute, you need to have Git (a version control software) installed in your machine.
 * Refer this - https://docs.github.com/en/github/getting-started-with-github/set-up-git#setting-up-git to install and setup Git.
 
-## Install Go
+### Install Go
 
 * The Telegram Bot is written in Go. Thus, in order to install Go, follow the doc here - https://golang.org/doc/install
 
@@ -34,7 +34,7 @@ $ cd bots/telegram-bot
 $ ls
 ```
 
-### Setting up the bot
+## Setting up the bot
 
 1. Ping [Botfather](telegram.me/botfather) on Telegram and make your instance of OSDC-Bot bot by selecting `/newbot` from the optionsprovides.
 2. Copy the `TELEGRAM_TOKEN` provided by Botfather.
@@ -45,7 +45,7 @@ $ ls
 7. Now, run `./telegram-bot`. The bot would be running at the username provided by you on telegram. 🚀
 8. If you would like to make some changes and contribute to the bot, follow the steps below.
 
-### Making Pull-Requests (Contributions)
+## Making Pull-Requests (Contributions)
 
 Having setup the bot and tested its working, if you want to contribute to it, follow the steps below :
 
