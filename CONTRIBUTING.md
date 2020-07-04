@@ -65,7 +65,7 @@ $ git commit -m "Commit-message"
 ```
 5. Push the changes to your branch on Github using the `git push` command :
 ```
-$ git push origin "Name-of-the-branch-from-step-1"
+$ git push -u origin "Name-of-the-branch-from-step-1"
 ```
 6. Then, go to your forked repository and make a Pull Request 🎉. Refer [this](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) for more details.
 
