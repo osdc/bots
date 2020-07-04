@@ -1,19 +1,20 @@
-# Contributing
 
-Contributions are always welcome, no matter how large or small!
+# Contributing 🔥✨
+
+Contributions are always welcome, no matter how large or small!🙂
 
 ### Create an account on Github
 
-In order to contribute, you need to have an account on Github. Go to https://github.com to create an account.
+In order to contribute, you need to have an account on Github. Go to 👉 https://github.com to create an account.
 
 ### Install Git
 
 * In order to contribute, you need to have Git (a version control software) installed in your machine.
-* Refer this - https://docs.github.com/en/github/getting-started-with-github/set-up-git#setting-up-git to install and setup Git.
+* Refer this 👉 https://docs.github.com/en/github/getting-started-with-github/set-up-git#setting-up-git to install and setup Git 🚀.
 
 ### Install Go
 
-* The Telegram Bot is written in Go. Thus, in order to install Go, follow the doc here - https://golang.org/doc/install
+* The Telegram Bot is written in Go. Thus, in order to install Go, follow the doc here 👉 https://golang.org/doc/install
 
 ## Fork and clone this repository
 
@@ -68,7 +69,7 @@ $ git push origin "Name-of-the-branch-from-step-1"
 ```
 6. Then, go to your forked repository and make a Pull Request 🎉. Refer [this](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) for more details.
 
-## Resources
+## Resources 📚
 
 ### Git and Github
 
@@ -82,6 +83,6 @@ $ git push origin "Name-of-the-branch-from-step-1"
 * [Learn Go](https://www.codecademy.com/learn/learn-go) by Codecademy
 * [Gophercises](https://gophercises.com/)
 
-## Chat
+## Chat 🔊
 
 * Feel free to check out the `#jiit-lug` channel on IRC or on our Telegram channel. We are always happy to help out!
