@@ -69,8 +69,9 @@ func fetchallnotes(ID int64, client mongo.Client) {
 
 func fetchnote(ID int64, msgtext string, client mongo.Client) {
 	collection := client.Database("test").Collection("SavedNote")
+	args := strings.Fields(msgtext)
 	var result notesData
-	_ = collection.FindOne(context.TODO(), bson.M{"name": msgtext}).Decode(&result)
+	_ = collection.FindOne(context.TODO(), bson.M{"name": args[1]}).Decode(&result)
 	log.Print(result.Name)
 	if (notesData{}) != result {
 		message := "<b>" + result.Name + "</b> : " + result.Content
@@ -85,7 +86,7 @@ func fetchnote(ID int64, msgtext string, client mongo.Client) {
 		}
 		bot.Send(messageconfig)
 	} else {
-		bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+		bot.Send(tbot.NewMessage(ID, "No note saved with that name."))
 	}
 }
 

@@ -218,8 +218,10 @@ func main() {
 				fetchallnotes(ID, *client)
 			case "deletenote":
 				deletenote(ID, update.Message.Text, *client)
+			case "fetchnote":
+				fetchnote(ID, update.Message.Text, *client)
 			default:
-				fetchnote(ID, update.Message.Command(), *client)
+				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
 		}
 		if update.Message.NewChatMembers != nil {
