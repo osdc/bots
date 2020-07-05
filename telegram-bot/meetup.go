@@ -66,32 +66,37 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 	collection := client.Database("test").Collection("meetups")
 
 	args := strings.Fields(msgtext)
-	if len(args) == 8 {
+	if len(args) == 5 {
+		//separating the date and hour arguments so that we can use the
+		// dd/mm/yyyy and hh:min format
+		separatedDateStr := strings.Split(args[2], "/")
+		separatedHourStr := strings.Split(args[3], ":")
+
 		//converting the arguments into integers to pass them to time.Date
-		day, err := strconv.Atoi(args[2])
+		day, err := strconv.Atoi(separatedDateStr[0])
 		if err != nil {
 			log.Fatalln(err)
 		}
-		month, err := strconv.Atoi(args[3])
+		month, err := strconv.Atoi(separatedDateStr[1])
 		if err != nil {
 			log.Fatalln(err)
 		}
-		year, err := strconv.Atoi(args[4])
+		year, err := strconv.Atoi(separatedDateStr[2])
 		if err != nil {
 			log.Fatalln(err)
 		}
-		hour, err := strconv.Atoi(args[5])
+		hour, err := strconv.Atoi(separatedHourStr[0])
 		if err != nil {
 			log.Fatalln(err)
 		}
-		minutes, err := strconv.Atoi(args[6])
+		minutes, err := strconv.Atoi(separatedHourStr[1])
 		if err != nil {
 			log.Fatalln(err)
 		}
 		data := meetupdata{
 			Name:  args[1],
 			Date:  time.Date(year, time.Month(month), day, hour, minutes, 0, 0, time.Local),
-			Venue: args[7],
+			Venue: args[4],
 		}
 		_, err = collection.DeleteMany(context.TODO(), bson.D{{}})
 		if err != nil {
@@ -107,7 +112,7 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		//making a formatted string from time to pass it to s.At(). This will
 		//specify the time at which the reminder is sent. Currently 2 hours
 		//before the meetup
-		remindTime := fmt.Sprintf("%d:%d:00", hour-1, minutes)
+		remindTime := fmt.Sprintf("%d:%d", hour-1, minutes)
 
 		//making a new scheduler
 		s1 := gocron.NewScheduler(time.Local)
@@ -116,7 +121,7 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		s1.Every(1).Day().At(remindTime).Do(reminder, ID, client, s1)
 		s1.Start()
 	} else {
-		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <DD MM YY Hr Min> <Venue> \nTIME IN 24Hr FORMAT"))
+		bot.Send(tbot.NewMessage(ID, "Please provide the details of meetup in this format - /addmeetup <Title> <DD/MM/YY Hr:Min> <Venue> \nTIME IN 24Hr FORMAT"))
 	}
 }
 
@@ -130,7 +135,7 @@ func nextmeetup(ID int64, client mongo.Client) {
 	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
-	timeString := result.Date.Local().Format("Mon Jan _2 15:04:05 2006")
+	timeString := result.Date.Local().Format("Mon Jan _2 15:04 2006")
 	nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" + result.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Venue - " + result.Venue
 	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 }
@@ -144,7 +149,7 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
-	timeString := data.Date.Local().Format("Mon Jan _2 15:04:05 2006")
+	timeString := data.Date.Local().Format("Mon Jan _2 15:04 2006")
 	nxtMeetupData := "MEETUP REMINDER!" + "\n" + "Title -" + "\t" + data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Venue - " + data.Venue
 	if !time.Now().Local().Before(data.Date) {
 		//stops the scheduler when meetup is done
