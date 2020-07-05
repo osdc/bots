@@ -62,7 +62,7 @@ func help(ID int64) {
 	/irc - Find us on IRC.
 	/xkcd - Get a xkcd comic for you.
 	/dlmeetups - Get the list of upcoming meetups of Delhi/NCR communities.
-	/addmeetup* - Add the details of next OSDC Meetup.` + "\n" + `Format : /addmeetup <Title> <DD/MM/YYYY>
+	/addmeetup* - Add the details of next OSDC Meetup.` + "\n" + `Format : /addmeetup <Title> <DD/MM/YYYY Hr:Min> <Venue>
 	/nextmeetup - Get the details of next OSDC Meetup
 	To contribute to|modify this bot : https://github.com/vaibhavk/osdc-bots
 	* - Only for channel admins.
