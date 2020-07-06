@@ -187,6 +187,8 @@ func main() {
 				deletenote(ID, update.Message.Text, *client)
 			case "fetchnote":
 				fetchnote(ID, update.Message.Text, *client)
+			case "introduction":
+				introverify(update.Message.From, ID, *client)
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
@@ -196,7 +198,7 @@ func main() {
 				if user.IsBot && user.UserName != "osdcbot" {
 					go kickUser(user.ID, ID)
 				} else {
-					go welcome(user, ID)
+					go welcome(user, ID, *client)
 				}
 			}
 		}
