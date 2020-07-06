@@ -89,3 +89,42 @@ func introverify(user *tbot.User, ID int64, client mongo.Client) {
 	}
 
 }
+
+func introkick(ID int64, client mongo.Client) {
+	collection := client.Database("test").Collection("user")
+	ctx := context.Background()
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		log.Fatal(err)
+		defer cursor.Close(ctx)
+	} else {
+		// iterate over docs using Next()
+		for cursor.Next(ctx) {
+			// Declare a result BSON object
+			var result newUser
+			err := cursor.Decode(&result)
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				// log.Println(time.Now().Local().Day(), result.JoinDate.Day())
+				if result.Introduction == false {
+					curHour := time.Now().Local().Hour()
+					curDay := time.Now().Local().Day()
+					User := fmt.Sprintf("[%v](tg://user?id=%v)", result.FirstName, result.UserID)
+					log.Println(curDay-result.JoinDate.Day(), curHour-result.JoinDate.Hour())
+					if (curDay-result.JoinDate.Day() > 0 && curHour-result.JoinDate.Hour() > 0) || curDay-result.JoinDate.Day() > 1 {
+						go kickUser(result.UserID, ID)
+						collection.DeleteOne(context.TODO(), bson.M{"userid": result.UserID})
+						reply := tbot.NewMessage(ID, User+" kicked. `Reason : No introduction within 24 hours of joining`")
+						reply.ParseMode = "markdown"
+						bot.Send(reply)
+					} else {
+						reply := tbot.NewMessage(ID, User+", Please introduce yourself in the next 12 hours or I will not be able to verify your presence and will have to kick you.")
+						reply.ParseMode = "markdown"
+						bot.Send(reply)
+					}
+				}
+			}
+		}
+	}
+}

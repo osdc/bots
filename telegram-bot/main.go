@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/anaskhan96/soup"
+	"github.com/go-co-op/gocron"
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -111,7 +112,7 @@ func main() {
 		fmt.Println("error in auth")
 		log.Panic(err)
 	}
-	bot.Debug = true
+	// bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 	u := tbot.NewUpdate(0)
@@ -141,6 +142,9 @@ func main() {
 		}
 
 		ID := update.Message.Chat.ID
+		cron := gocron.NewScheduler(time.Local)
+		cron.Every(12).Hour().Do(introkick, ID, *client)
+		cron.Start()
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
