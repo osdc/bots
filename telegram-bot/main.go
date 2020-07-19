@@ -220,6 +220,8 @@ func main() {
 				deletenote(ID, update.Message.Text, *client)
 			case "fetchnote":
 				fetchnote(ID, update.Message.Text, *client)
+			case "paste":
+				paste(ID, update.Message)
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
