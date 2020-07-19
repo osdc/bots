@@ -11,29 +11,32 @@ import (
 )
 
 func paste(ID int64, message *tbot.Message) {
-	var resp *http.Response
-	var err error
-	if message.ReplyToMessage.Text != "" {
-		data := message.ReplyToMessage.Text
-		log.Println("text", data)
-		resp, err = http.Post("https://paste.rs/", "application/octet-stream", strings.NewReader(data))
-	} else {
-		data := message.ReplyToMessage.Document
-		filelink, errf := bot.GetFileDirectURL(data.FileID)
-		if errf != nil {
-			log.Fatalln(errf)
+	if message.ReplyToMessage != nil {
+		if message.ReplyToMessage.Text != "" {
+			data := message.ReplyToMessage.Text
+			resp, err := http.Post("https://paste.rs/", "application/octet-stream", strings.NewReader(data))
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer resp.Body.Close()
+			body, _ := ioutil.ReadAll(resp.Body)
+			ButtonLinks(ID, "Click Here", string(body), "Text pasted. Find it below")
+		} else if message.ReplyToMessage.Document != nil {
+			data := message.ReplyToMessage.Document
+			filelink, _ := bot.GetFileDirectURL(data.FileID)
+			filebytes, _ := http.Get(filelink)
+			file, _ := ioutil.ReadAll(filebytes.Body)
+			resp, err := http.Post("https://paste.rs/", "application/octet-stream", bytes.NewBuffer(file))
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer resp.Body.Close()
+			body, _ := ioutil.ReadAll(resp.Body)
+			ButtonLinks(ID, "Click Here", string(body), "Document pasted. Find it below")
+		} else {
+			bot.Send(tbot.NewMessage(ID, "I don't know what to paste. Reply to a text message/document so I can paste it to paste.rs"))
 		}
-		filebytes, _ := http.Get(filelink)
-		file, _ := ioutil.ReadAll(filebytes.Body)
-		resp, err = http.Post("https://paste.rs/", "application/octet-stream", bytes.NewBuffer(file))
+	} else {
+		bot.Send(tbot.NewMessage(ID, "I don't know what to paste. Reply to a text message/document and use `/paste` so I can paste it to paste.rs"))
 	}
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println(string(body))
 }
