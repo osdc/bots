@@ -64,7 +64,7 @@ func help(ID int64) {
 	/dlmeetups - Get the list of upcoming meetups of Delhi/NCR communities.
 	/addmeetup* - Add the details of next OSDC Meetup.` + "\n" + `Format : /addmeetup <Title> <DD/MM/YYYY Hr:Min> <Venue>
 	/nextmeetup - Get the details of next OSDC Meetup
-	To contribute to|modify this bot : https://github.com/vaibhavk/osdc-bots
+	To contribute to|modify this bot : https://github.com/osdc/bots
 	* - Only for channel admins.
 	`
 	bot.Send(tbot.NewMessage(ID, msg))
