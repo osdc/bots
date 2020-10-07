@@ -41,7 +41,7 @@ $ ls
 
 ## Setting up the bot
 
-1. Ping [Botfather](telegram.me/botfather) on Telegram and make your instance of OSDC-Bot 🤖 bot by selecting `/newbot` from the options provided.
+1. Ping [Botfather](https://telegram.me/botfather) on Telegram and make your instance of OSDC-Bot 🤖 bot by selecting `/newbot` from the options provided.
 2. Copy the `TELEGRAM_TOKEN` provided by Botfather.
 3. Make sure you have followed all the above steps and are in the `telegram-bot` directory.
 4. If you have installed golang, run `go build .`
