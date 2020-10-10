@@ -12,6 +12,7 @@ import (
 )
 
 type notesData struct {
+	hell        string
 	Name        string
 	Description string
 	LinkTitle   string
