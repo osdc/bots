@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/anaskhan96/soup"
+	"github.com/go-co-op/gocron"
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -81,39 +82,6 @@ func dlmeetups(ID int64) {
 	bot.Send(tbot.NewMessage(ID, finallist))
 }
 
-func welcome(user tbot.User, ID int64) {
-	User := fmt.Sprintf("[%v](tg://user?id=%v)", user.FirstName, user.ID)
-	var botSlice = make([]string, 0)
-	botSlice = append(botSlice,
-		"helping the hackers in here.",
-		"a bot made by the geeks for the geeks.",
-		"an Autobot on Earth to promote open source.",
-		"a distant cousin of the mars rover.",
-		"a friendly bot written in Golang.",
-	)
-	var quesSlice = make([]string, 0)
-	quesSlice = append(quesSlice,
-		"which language do you work with?",
-		"what do you want to learn?",
-		"what is your current operating system?",
-		"if you are new to open source.",
-		"which technology fascinates you the most?",
-		"what have you been exploring recently?",
-	)
-
-	rand.Seed(time.Now().UnixNano())
-	min := 0
-	max := len(botSlice) - 1
-	randomNum1 := (rand.Intn(max-min+1) + min)
-	randomNum2 := (rand.Intn(max-min+1) + min)
-	var welcomeMessage1 = fmt.Sprintf(botSlice[randomNum1])
-	var welcomeMessage2 = fmt.Sprintf(quesSlice[randomNum2])
-	reply := tbot.NewMessage(ID, "Welcome "+User+", I am the OSDC-bot, "+welcomeMessage1+
-		" Please introduce yourself. To start with, you can tell us "+welcomeMessage2)
-	reply.ParseMode = "markdown"
-	bot.Send(reply)
-}
-
 //extracts the details of the user who sent the message to check whether the user is creator/admin. Returns true in this case else false.
 func memberdetails(ID int64, userid int) bool {
 	response, _ := bot.GetChatMember(tbot.ChatConfigWithUser{
@@ -144,7 +112,7 @@ func main() {
 		fmt.Println("error in auth")
 		log.Panic(err)
 	}
-	bot.Debug = true
+	// bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 	u := tbot.NewUpdate(0)
@@ -174,6 +142,9 @@ func main() {
 		}
 
 		ID := update.Message.Chat.ID
+		cron := gocron.NewScheduler(time.Local)
+		cron.Every(12).Hour().Do(introkick, ID, *client)
+		cron.Start()
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
@@ -220,6 +191,8 @@ func main() {
 				deletenote(ID, update.Message.Text, *client)
 			case "fetchnote":
 				fetchnote(ID, update.Message.Text, *client)
+			case "introduction":
+				introverify(update.Message.From, ID, *client)
 			default:
 				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
 			}
@@ -229,7 +202,7 @@ func main() {
 				if user.IsBot && user.UserName != "osdcbot" {
 					go kickUser(user.ID, ID)
 				} else {
-					go welcome(user, ID)
+					go welcome(user, ID, *client)
 				}
 			}
 		}
