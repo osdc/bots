@@ -28,10 +28,10 @@ type group struct {
 }
 type meetuplist struct {
 	Name  string `json:"name"`
-	Venue venue  `json: "venue"`
+	Venue  venue `json:"venue"`
 	Date  string `json:"local_date"`
 	Time  string `json:"local_time"`
-	Group group  `json: "group"`
+	Group  group `json:"group"`
 	Link  string `json:"link"`
 }
 
@@ -93,9 +93,13 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		location, err := time.LoadLocation("Asia/Kolkata")
+		if err != nil {
+			panic(err)
+		}
 		data := meetupdata{
 			Name:  args[1],
-			Date:  time.Date(year, time.Month(month), day, hour, minutes, 0, 0, time.Local),
+			Date:  time.Date(year, time.Month(month), day, hour, minutes, 0, 0, location),
 			Venue: args[4],
 		}
 		_, err = collection.DeleteMany(context.TODO(), bson.D{{}})
@@ -114,7 +118,7 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		remindTime := fmt.Sprintf("%d:%d", hour-2, minutes)
 
 		//making a new scheduler
-		s1 := gocron.NewScheduler(time.Local)
+		s1 := gocron.NewScheduler(location)
 
 		//assigning the scheduler a task and then starting it
 		s1.Every(1).Day().At(remindTime).Do(reminder, ID, client, s1)
