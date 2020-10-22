@@ -35,7 +35,7 @@ bot.on('message',message => {
                 {name : '!twitter', value: "Check us out on Twitter " ,inline:false},
                 {name : '!github', value: "Visit our Github Repository " ,inline:false},
                 {name : '!telegram', value: "Join our telegram channel " ,inline:false},
-                {name : '!xkcd', value: "To get a Comic " ,inline:false},
+                {name : '!xkcd', value: "To get an xkcd comic " ,inline:false},
                 {name : '!irc', value: "Find us on IRC :) " ,inline:false},
                 {name : '!blog', value: "Get the link of OSDC blog" ,inline:false},
                 {name : '!instagram', value: "Follow us on instagram :) " ,inline:false},
@@ -46,6 +46,10 @@ bot.on('message',message => {
 })
 
 //xkcd comic command
+//It first randomly generate a number between 100 to 2000 and then fetch the xkcd url using xmlhttprequest
+//It then search for the image url which is around line 2000 so it start search from there to save some time
+//It then search whether the image is of png format or jpg format and then accordingly send the message to server
+
 
 bot.on('message',message => {
 if(message.content === '!xkcd')
@@ -78,7 +82,7 @@ if(message.content === '!xkcd')
 bot.on('message',message => { 
    if(message.content === '!website')
    {    
-    const website = new Discord.MessageEmbed().setTitle('Visit our Website').setURL('https://osdc.github.io/')
+    const website = new Discord.MessageEmbed().setTitle('Visit our Website').setURL('https://osdc.netlify.app/')
     message.channel.send(website)
    }
    if(message.content === '!twitter')
@@ -93,7 +97,7 @@ bot.on('message',message => {
    }
     if(message.content === '!github')
     {
-        const github = new Discord.MessageEmbed().setTitle('Visit you Github Repository ').setURL('https://github.com/osdc')
+        const github = new Discord.MessageEmbed().setTitle('Take a look at our cool projects').setURL('https://github.com/osdc')
         message.channel.send(github)
     }
     if(message.content === '!telegram')
@@ -108,7 +112,7 @@ bot.on('message',message => {
     } 
     if(message.content === '!blog')
     {
-        const blog = new Discord.MessageEmbed().setTitle('Blogs written by the folks at the Open Source Developers Club').setURL('https://osdcblog.netlify.com/')
+        const blog = new Discord.MessageEmbed().setTitle('Blogs written by the folks at the Open Source Developers Community').setURL('https://osdcblog.netlify.com/')
         message.channel.send(blog)
     } 
     
