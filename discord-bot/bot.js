@@ -1,12 +1,9 @@
 require('dotenv').config()
-let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+const axios = require('axios');
+
 const Discord = require('discord.js')
 const bot = new Discord.Client()
 const token = process.env.TOKEN_OSDC
-const Http = new XMLHttpRequest();
-
-const regex = 'https://imgs.xkcd.com/comics'
-const png = 'png'
 
 bot.on('ready', () => {
     console.log('The bot is online!!!!')
@@ -46,35 +43,21 @@ bot.on('message',message => {
 })
 
 //xkcd comic command
-//It first randomly generate a number between 100 to 2000 and then fetch the xkcd url using xmlhttprequest
-//It then search for the image url which is around line 2000 so it start search from there to save some time
-//It then search whether the image is of png format or jpg format and then accordingly send the message to server
+//It first randomly generate a number between 100 to 2000 and then sends the http request with the generated number to fetch comic 
 
 
 bot.on('message',message => {
 if(message.content === '!xkcd')
 { 
     let comicNo = Math.floor(Math.random() * (2000 - 100 + 1) + 100)
-    const url='https://xkcd.com/' + comicNo;
-    Http.open("GET", url);
-    Http.send();
-
-    Http.onload = () => {
-    let endpoint = 0
-    let pos = Http.responseText.indexOf(regex,2000);
-        
-    let arr2 = Http.responseText.indexOf('png',pos + 1)
-    if(arr2 - pos < 100) {
-         endpoint = arr2 + 3
-        }
-    else {
-        let arr3 = Http.responseText.indexOf('jpg',pos+ 1);
-        endpoint = arr3 + 3 ;
-     }
-    message.channel.send(Http.responseText.substring(pos,endpoint))
+    
+    axios.get(`http://xkcd.com/${comicNo}/info.0.json`).then(resp => {
+    
+        message.channel.send(resp.data.img)
+    });
+    
     }
     
-}
 })
 
 //Social media commands

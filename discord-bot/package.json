@@ -8,11 +8,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "licenses": [{
-    "type": "MIT",
-    "url": "https://github.com/osdc/bots/blob/master/LICENSE.md"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/osdc/bots/blob/master/LICENSE.md"
+    }
+  ],
   "dependencies": {
+    "axios": "^0.21.0",
     "discord.js": "^12.4.0",
     "dotenv": "^8.2.0",
     "xmlhttprequest": "^1.8.0"
