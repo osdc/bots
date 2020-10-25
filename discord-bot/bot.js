@@ -15,7 +15,7 @@ bot.on('ready', () => {
 bot.on('guildMemberAdd',member => {
     const channel = member.guild.channels.cache.find(ch => ch.name === 'member-log');
     if(!channel) return ;
-    message.channel.send(`Hello ${message.author} Welcome to OSDC discord Server..Please introduce yourself!!`)
+    message.channel.send(`Hello ${message.author} Welcome to OSDC Discord Server..Please introduce yourself!!`)
 })
 
 //help command
