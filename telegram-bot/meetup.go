@@ -139,12 +139,17 @@ func nextmeetup(ID int64, client mongo.Client) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	location, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
-	timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+	timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
 	nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
 		data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
-		data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+		data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 }
 
@@ -155,20 +160,22 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	location, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+	}
 	//reminder will be sent only if the the meetup is today
-	if time.Now().Local().Day() == data.Date.Day() {
+	if time.Now().In(location).Day() == data.Date.Day() {
 		//the string inside Format method is a sample string to specify the display
 		//format of meetupTimeString
-		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
 		nxtMeetupData := "MEETUP REMINDER!" + "\n" + "Title -" + "\t" +
 			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" +
-			"\t" + data.Date.Local().Format("15:04") + "\n" +
+			"\t" + data.Date.In(location).Format("15:04") + "\n" +
 			"Venue -" + "\t" + data.Venue
-		if !time.Now().Local().Before(data.Date) {
-			//stops the scheduler when meetup is done
-			s1.Clear()
-		} else {
-			bot.Send(tbot.NewMessage(ID, nxtMeetupData))
-		}
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+		//stops the scheduler when meetup is done
+		s1.Clear()
 	}
 }
