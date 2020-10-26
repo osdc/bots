@@ -142,7 +142,7 @@ func nextmeetup(ID int64, client mongo.Client) {
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while saving the meetup, please try again"))
 	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
@@ -163,7 +163,7 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while processing the reminder, please try again"))
 	}
 	//reminder will be sent only if the the meetup is today
 	if time.Now().In(location).Day() == data.Date.Day() {
@@ -175,7 +175,7 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 			"\t" + data.Date.In(location).Format("15:04") + "\n" +
 			"Venue -" + "\t" + data.Venue
 		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
-		//stops the scheduler when meetup is done
+		//stops the scheduler when reminder is sent
 		s1.Clear()
 	}
 }
