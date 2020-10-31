@@ -137,7 +137,16 @@ func nextmeetup(ID int64, client mongo.Client) {
 	var data meetupdata
 	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&data)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "No meetup scheduled."))
+	} else {
+		//the string inside Format method is a sample string to specify the display
+		//format of meetupTimeString
+		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
+			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
+			data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 	}
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
