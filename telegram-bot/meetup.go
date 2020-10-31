@@ -148,7 +148,6 @@ func nextmeetup(ID int64, client mongo.Client) {
 			data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 	}
-<<<<<<< HEAD
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		log.Print(err)
@@ -161,8 +160,6 @@ func nextmeetup(ID int64, client mongo.Client) {
 		data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
 		data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
-=======
->>>>>>> 160c086... Fixed bot crash on '/nextmeetup' command
 }
 
 func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
