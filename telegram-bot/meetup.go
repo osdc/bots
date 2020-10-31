@@ -137,8 +137,18 @@ func nextmeetup(ID int64, client mongo.Client) {
 	var data meetupdata
 	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&data)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "No meetup scheduled."))
+	} else {
+		//the string inside Format method is a sample string to specify the display
+		//format of meetupTimeString
+		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
+			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
+			data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 	}
+<<<<<<< HEAD
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		log.Print(err)
@@ -151,6 +161,8 @@ func nextmeetup(ID int64, client mongo.Client) {
 		data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
 		data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+=======
+>>>>>>> 160c086... Fixed bot crash on '/nextmeetup' command
 }
 
 func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
