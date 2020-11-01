@@ -221,7 +221,14 @@ func main() {
 			case "fetchnote":
 				fetchnote(ID, update.Message.Text, *client)
 			default:
-				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+				{
+				      msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
+					log.Print(err)
+					timer1 := time.NewTimer(5 * time.Second)
+					<-timer1.C
+
+					bot.DeleteMessage(tbot.NewDeleteMessage(ID, msg.MessageID))
+				}
 			}
 		}
 		if update.Message.NewChatMembers != nil {
