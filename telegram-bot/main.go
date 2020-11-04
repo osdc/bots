@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/anaskhan96/soup"
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
-	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
+	
+	"github.com/anaskhan96/soup"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
+	 tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
