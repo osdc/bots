@@ -193,7 +193,9 @@ func main() {
 
 	fmt.Println("Connected to MongoDB!")
 	
-	go tweet()                /*Running twitter stream concurrently*/
+	// Running twitter stream concurrently
+	go tweet()
+	
 	for update := range updates {
 		if update.Message == nil {
 			continue
