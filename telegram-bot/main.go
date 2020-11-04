@@ -48,7 +48,7 @@ func tweet() {
 		fmt.Println(tweet.IDStr)
 		Group_ID, _ := strconv.ParseInt(os.Getenv("OSDC_GROUP_ID"), 10, 64)
 
-		bot.Send(tbot.NewMessage(Group_ID, "New Tweet ALert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
+		bot.Send(tbot.NewMessage(Group_ID, "New Tweet Alert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
 	}
 	demux.HandleChan(stream.Messages)
 
@@ -193,7 +193,7 @@ func main() {
 
 	fmt.Println("Connected to MongoDB!")
 	
-	tweet()
+	go tweet()                /*Running twitter stream concurrently*/
 	for update := range updates {
 		if update.Message == nil {
 			continue
