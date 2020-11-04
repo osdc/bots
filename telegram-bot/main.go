@@ -191,7 +191,7 @@ func main() {
 	}
 
 	fmt.Println("Connected to MongoDB!")
-	//tweet
+	
 	tweet()
 	for update := range updates {
 		if update.Message == nil {
