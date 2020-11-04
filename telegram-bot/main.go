@@ -29,7 +29,7 @@ func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText stri
 	msg.ReplyMarkup = button
 	bot.Send(msg)
 }
-
+//Streams Tweets with the help of Twitter API , bot sends the link of any new tweet on Telegram. Replies or retweet texts on  this particular tweet are also sent.
 func tweet() {
 	//Initializing twitter API
 	config := oauth1.NewConfig(os.Getenv("TWITTER_CONSUMER_KEY"), os.Getenv("TWITTER_CONSUMER_SECRET"))
