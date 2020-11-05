@@ -253,7 +253,8 @@ func main() {
 				paste(ID, update.Message)
 			default:
 				{
-				      msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
+					msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
+
 					log.Print(err)
 					timer1 := time.NewTimer(5 * time.Second)
 					<-timer1.C
