@@ -1,8 +1,8 @@
 ---
-name: "\U0001f680 New Feature"
+name: "\U0001f680 New Feature for Discord Bot"
 about: "Any issue you want to suggest or maybe implement."
 title: ''
-labels: enhancement
+labels: enhancement, discord bot
 assignees: ''
 
 ---
