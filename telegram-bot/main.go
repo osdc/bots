@@ -8,11 +8,11 @@ import (
 	"os"
 	"strconv"
 	"time"
-	
+
 	"github.com/anaskhan96/soup"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	 tbot "github.com/go-telegram-bot-api/telegram-bot-api"
+	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,16 +20,18 @@ import (
 
 var bot *tbot.BotAPI
 
-func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string) {
+//ButtonLinks sends the parsed arguements as an inline buttons to the specified chat ID
+func ButtonLinks(ID int64, ButtonText string, ButtonURL string, MessageText string) {
 	var button = tbot.NewInlineKeyboardMarkup(
 		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
+			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonURL),
 		),
 	)
 	msg := tbot.NewMessage(ID, MessageText)
 	msg.ReplyMarkup = button
 	bot.Send(msg)
 }
+
 //Streams tweets with the help of Twitter API , bot sends the link of any new tweet or tweet related activity to the specified group on telegram.
 func tweet() {
 	//Initializing twitter API
@@ -46,9 +48,9 @@ func tweet() {
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
 		fmt.Println(tweet.IDStr)
-		Group_ID, _ := strconv.ParseInt(os.Getenv("OSDC_GROUP_ID"), 10, 64)
+		GroupID, _ := strconv.ParseInt(os.Getenv("OSDC_GROUP_ID"), 10, 64)
 
-		bot.Send(tbot.NewMessage(Group_ID, "New Tweet Alert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
+		bot.Send(tbot.NewMessage(GroupID, "New Tweet Alert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
 	}
 	demux.HandleChan(stream.Messages)
 
@@ -147,9 +149,8 @@ func memberdetails(ID int64, userid int) bool {
 	})
 	if response.IsCreator() || response.IsAdministrator() {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func kickUser(user int, ID int64) {
@@ -192,10 +193,10 @@ func main() {
 	}
 
 	fmt.Println("Connected to MongoDB!")
-	
+
 	// Running twitter stream concurrently
 	go tweet()
-	
+
 	for update := range updates {
 		if update.Message == nil {
 			continue

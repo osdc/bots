@@ -28,10 +28,10 @@ type group struct {
 }
 type meetuplist struct {
 	Name  string `json:"name"`
-	Venue venue  `json: "venue"`
+	Venue venue  `json:"venue"`
 	Date  string `json:"local_date"`
 	Time  string `json:"local_time"`
-	Group group  `json: "group"`
+	Group group  `json:"group"`
 	Link  string `json:"link"`
 }
 
