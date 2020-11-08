@@ -31,7 +31,7 @@ bot.on('message',message => {
             .setTitle('Here are the list of commands ')
             .addFields(
                 {name : '!help', value: "To view the list of commands " ,inline:false},
-                {name : '!website', value: "Visit our Website" ,inline:false},
+                {name : '!website', value: "Visit our Website" ,inline:false}, 
                 {name : '!facebook', value: "Follow us on Facebook " ,inline:false},
                 {name : '!twitter', value: "Check us out on Twitter " ,inline:false},
                 {name : '!github', value: "Visit our Github Repository " ,inline:false},
