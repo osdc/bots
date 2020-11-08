@@ -66,8 +66,6 @@ if(message.content === '!xkcd')
 
 bot.on('message',message => { 
 
-// console.log(message.content+"   hello")
-
    if(message.content === '!website')
    {    
     const website = new Discord.MessageEmbed().setTitle('Visit our Website').setURL('https://osdc.netlify.app/')
