@@ -9,11 +9,6 @@ bot.on('ready', () => {
     console.log('The bot is online!!!!')
 })
 
-
-// A set of valid commands 
-
-var isValid = new Set(["!help" , "!xkcd" , "!telegram" , "!facebook" , "!twitter" , "!irc" , "!blog" , "!website" , "!github" , "!blog" , "!instagram"])
-
 //Greeting message for a New user!!!
 
 bot.on('guildMemberAdd',member => {
@@ -76,7 +71,6 @@ bot.on('message',message => {
    {
         const twitter =  new Discord.MessageEmbed().setTitle('Check us out on Twitter').setURL('https://twitter.com/osdcjiit')
         message.channel.send(twitter)
-        return false
    }
    else  if(message.content === '!facebook')
    {
@@ -109,7 +103,7 @@ bot.on('message',message => {
         message.channel.send('https://tenor.com/view/dont-do-that-avengers-black-panther-we-dont-do-that-here-gif-12042935')
     }
 
-    else if(message.content.length > 0 && isValid.has(message.content) === false && message.content[0] === '!')
+    else if(message.content[0] === '!')
     {
         const sorry = new Discord.MessageEmbed().setTitle('Command Not Found , try !help for reference')    
         message.channel.send(sorry)
