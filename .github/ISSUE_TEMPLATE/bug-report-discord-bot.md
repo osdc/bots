@@ -1,8 +1,8 @@
 ---
-name: "\U0001F41B Bug report"
+name: "\U0001F41B Bug report for Discord Bot"
 about: "If something isn't working as expected \U0001F914"
 title: ''
-labels: bug
+labels: bug, discord bot
 assignees: ''
 
 ---

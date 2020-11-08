@@ -28,10 +28,10 @@ type group struct {
 }
 type meetuplist struct {
 	Name  string `json:"name"`
-	Venue venue  `json: "venue"`
+	Venue venue  `json:"venue"`
 	Date  string `json:"local_date"`
 	Time  string `json:"local_time"`
-	Group group  `json: "group"`
+	Group group  `json:"group"`
 	Link  string `json:"link"`
 }
 
@@ -93,9 +93,14 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		location, err := time.LoadLocation("Asia/Kolkata")
+		if err != nil {
+			log.Print(err)
+			bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+		}
 		data := meetupdata{
 			Name:  args[1],
-			Date:  time.Date(year, time.Month(month), day, hour, minutes, 0, 0, time.Local),
+			Date:  time.Date(year, time.Month(month), day, hour, minutes, 0, 0, location),
 			Venue: args[4],
 		}
 		_, err = collection.DeleteMany(context.TODO(), bson.D{{}})
@@ -114,7 +119,7 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		remindTime := fmt.Sprintf("%d:%d", hour-2, minutes)
 
 		//making a new scheduler
-		s1 := gocron.NewScheduler(time.Local)
+		s1 := gocron.NewScheduler(location)
 
 		//assigning the scheduler a task and then starting it
 		s1.Every(1).Day().At(remindTime).Do(reminder, ID, client, s1)
@@ -132,14 +137,28 @@ func nextmeetup(ID int64, client mongo.Client) {
 	var data meetupdata
 	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&data)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "No meetup scheduled."))
+	} else {
+		//the string inside Format method is a sample string to specify the display
+		//format of meetupTimeString
+		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
+			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
+			data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+	}
+	location, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while saving the meetup, please try again"))
 	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
-	timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+	timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
 	nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
 		data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
-		data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+		data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 }
 
@@ -150,20 +169,22 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	location, err := time.LoadLocation("Asia/Kolkata")
+	if err != nil {
+		log.Print(err)
+		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while processing the reminder, please try again"))
+	}
 	//reminder will be sent only if the the meetup is today
-	if time.Now().Local().Day() == data.Date.Day() {
+	if time.Now().In(location).Day() == data.Date.Day() {
 		//the string inside Format method is a sample string to specify the display
 		//format of meetupTimeString
-		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
 		nxtMeetupData := "MEETUP REMINDER!" + "\n" + "Title -" + "\t" +
 			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" +
-			"\t" + data.Date.Local().Format("15:04") + "\n" +
+			"\t" + data.Date.In(location).Format("15:04") + "\n" +
 			"Venue -" + "\t" + data.Venue
-		if !time.Now().Local().Before(data.Date) {
-			//stops the scheduler when meetup is done
-			s1.Clear()
-		} else {
-			bot.Send(tbot.NewMessage(ID, nxtMeetupData))
-		}
+		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
+		//stops the scheduler when reminder is sent
+		s1.Clear()
 	}
 }

@@ -2,3 +2,6 @@ logs
 .exe
 telegram-bot/.env
 telegram-bot/main
+telegram-bot/telegram-bot
+discord-bot/.env
+discord-bot/node_modules

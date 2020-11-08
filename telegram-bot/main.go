@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/anaskhan96/soup"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
 	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,15 +20,40 @@ import (
 
 var bot *tbot.BotAPI
 
-func ButtonLinks(ID int64, ButtonText string, ButtonUrl string, MessageText string) {
+//ButtonLinks sends the parsed arguements as an inline buttons to the specified chat ID
+func ButtonLinks(ID int64, ButtonText string, ButtonURL string, MessageText string) {
 	var button = tbot.NewInlineKeyboardMarkup(
 		tbot.NewInlineKeyboardRow(
-			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonUrl),
+			tbot.NewInlineKeyboardButtonURL(ButtonText, ButtonURL),
 		),
 	)
 	msg := tbot.NewMessage(ID, MessageText)
 	msg.ReplyMarkup = button
 	bot.Send(msg)
+}
+
+//Streams tweets with the help of Twitter API , bot sends the link of any new tweet or tweet related activity to the specified group on telegram.
+func tweet() {
+	//Initializing twitter API
+	config := oauth1.NewConfig(os.Getenv("TWITTER_CONSUMER_KEY"), os.Getenv("TWITTER_CONSUMER_SECRET"))
+	token := oauth1.NewToken(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_SECRET"))
+	httpClient := config.Client(oauth1.NoContext, token)
+	client := twitter.NewClient(httpClient)
+
+	params := &twitter.StreamFilterParams{
+		Follow: []string{os.Getenv("OSDC_TWITTER_ID")},
+	}
+	stream, _ := client.Streams.Filter(params)
+
+	demux := twitter.NewSwitchDemux()
+	demux.Tweet = func(tweet *twitter.Tweet) {
+		fmt.Println(tweet.IDStr)
+		GroupID, _ := strconv.ParseInt(os.Getenv("OSDC_GROUP_ID"), 10, 64)
+
+		bot.Send(tbot.NewMessage(GroupID, "New Tweet Alert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
+	}
+	demux.HandleChan(stream.Messages)
+
 }
 
 //scraping xkcd strip URL from its website with the help of a random generated integer and then sending it as a photo using NewPhotoShare Telegram API method.
@@ -64,7 +91,7 @@ func help(ID int64) {
 	/dlmeetups - Get the list of upcoming meetups of Delhi/NCR communities.
 	/addmeetup* - Add the details of next OSDC Meetup.` + "\n" + `Format : /addmeetup <Title> <DD/MM/YYYY Hr:Min> <Venue>
 	/nextmeetup - Get the details of next OSDC Meetup
-	To contribute to|modify this bot : https://github.com/vaibhavk/osdc-bots
+	To contribute to|modify this bot : https://github.com/osdc/bots
 	* - Only for channel admins.
 	`
 	bot.Send(tbot.NewMessage(ID, msg))
@@ -122,9 +149,8 @@ func memberdetails(ID int64, userid int) bool {
 	})
 	if response.IsCreator() || response.IsAdministrator() {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func kickUser(user int, ID int64) {
@@ -145,7 +171,6 @@ func main() {
 		log.Panic(err)
 	}
 	bot.Debug = true
-
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 	u := tbot.NewUpdate(0)
 	u.Timeout = 60
@@ -168,12 +193,17 @@ func main() {
 	}
 
 	fmt.Println("Connected to MongoDB!")
+
+	// Running twitter stream concurrently
+	go tweet()
+
 	for update := range updates {
 		if update.Message == nil {
 			continue
 		}
 
 		ID := update.Message.Chat.ID
+
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
@@ -220,8 +250,18 @@ func main() {
 				deletenote(ID, update.Message.Text, *client)
 			case "fetchnote":
 				fetchnote(ID, update.Message.Text, *client)
+			case "paste":
+				paste(ID, update.Message)
 			default:
-				bot.Send(tbot.NewMessage(ID, "I don't know that command"))
+				{
+					msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
+
+					log.Print(err)
+					timer1 := time.NewTimer(5 * time.Second)
+					<-timer1.C
+
+					bot.DeleteMessage(tbot.NewDeleteMessage(ID, msg.MessageID))
+				}
 			}
 		}
 		if update.Message.NewChatMembers != nil {
