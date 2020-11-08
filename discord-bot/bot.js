@@ -43,7 +43,6 @@ bot.on('message',message => {
 //xkcd comic command
 //It first randomly generate a number between 100 to 2000 and then sends the http request with the generated number to fetch comic 
 
-
 bot.on('message',message => {
 if(message.content === '!xkcd')
    { 
@@ -65,7 +64,6 @@ bot.on('message',message => {
    {    
     const website = new Discord.MessageEmbed().setTitle('Visit our Website').setURL('https://osdc.netlify.app/')
     message.channel.send(website)
-    return false;
    }
    else if(message.content === '!twitter')
    {
