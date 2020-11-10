@@ -16,7 +16,8 @@ func paste(ID int64, message *tbot.Message) {
 			data := message.ReplyToMessage.Text
 			resp, err := http.Post("https://paste.rs/", "application/octet-stream", strings.NewReader(data))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
 			}
 			defer resp.Body.Close()
 			body, _ := ioutil.ReadAll(resp.Body)
@@ -28,7 +29,9 @@ func paste(ID int64, message *tbot.Message) {
 			file, _ := ioutil.ReadAll(filebytes.Body)
 			resp, err := http.Post("https://paste.rs/", "application/octet-stream", bytes.NewBuffer(file))
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+				bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
+				return
 			}
 			defer resp.Body.Close()
 			body, _ := ioutil.ReadAll(resp.Body)

@@ -24,6 +24,9 @@ $ git checkout -b <new-branch-name>
 5. You’ll get your bot API token as `89xxxxxxx:xxxxxxxxxxxxAAHmf32ZghS-cqxBLfnkUx9VwoXeOIRlnUQ`.
 6. Copy it and save it in a file named as `/.env/` in your project folder.
 
+## Set Mongo DB
+1. The configuration of your mongo db should be in : mongodb://localhost:27017
+
 ## Build & Execute the bot
 1. In the `telegram-bots` directory, run `go build .`
 2. Export the Telegram API Token by running `export TELEGRAM_TOKEN=<your-token>`  in the `telegram-bots` directory using terminal.

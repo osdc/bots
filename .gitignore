@@ -1,5 +1,6 @@
 logs
 .exe
+.idea
 telegram-bot/.env
 telegram-bot/main
 telegram-bot/telegram-bot
