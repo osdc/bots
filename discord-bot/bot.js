@@ -12,9 +12,16 @@ bot.on('ready', () => {
 //Greeting message for a New user!!!
 
 bot.on('guildMemberAdd',member => {
-    const channel = member.guild.channels.cache.find(ch => ch.name === 'member-log');
+    const channel = member.guild.channels.cache.find(ch => ch.name === 'general');
     if(!channel) return ;
-    message.channel.send(`Hello ${message.author} Welcome to OSDC Discord Server..Please introduce yourself!!`)
+    let name = member.user.username
+    let  welcomeEmbed = new Discord.MessageEmbed()
+        .setColor('#176ffc')
+        .setTitle(`Welcome ${name} to OSDC discord Server `)
+        .setDescription(`I am your friendly neighbourhood bot written in Javascript...Feel free to tell us about yourself and your interest so that folks in this community can help you out...`)
+        .setFooter('Use !help command to know more about me ')
+        .setThumbnail('https://user-images.githubusercontent.com/55575931/98469930-65ec4d80-2208-11eb-9744-73ee0e0240d8.png')
+        channel.send(welcomeEmbed)
 })
 
 //help command
