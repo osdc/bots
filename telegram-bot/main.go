@@ -59,7 +59,10 @@ func tweet() {
 
 func me(user string, ID int64, msgtext string) {
 
-	bot.Send(tbot.NewMessage(ID, "*@"+user+" "+msgtext+"*"))
+	s := strings.SplitN(msgtext, " ", 2)
+	if len(s) == 2 {
+		bot.Send(tbot.NewMessage(ID, "* @"+user+" "+s[1]+" *"))
+	}
 }
 
 //scraping xkcd strip URL from its website with the help of a random generated integer and then sending it as a photo using NewPhotoShare Telegram API method.
@@ -259,13 +262,8 @@ func main() {
 			case "paste":
 				paste(ID, update.Message)
 			case "me":
-				user := update.Message.From.UserName
-				msg := update.Message.Text
-				s := strings.SplitN(msg, " ", 2)
-				if len(s) == 2 {
-					me(user, ID, s[1])
-					bot.DeleteMessage(tbot.NewDeleteMessage(ID, update.Message.MessageID))
-				}
+				me(update.Message.From.UserName, ID, update.Message.Text)
+				bot.DeleteMessage(tbot.NewDeleteMessage(ID, update.Message.MessageID))
 			default:
 				{
 					msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
