@@ -43,15 +43,17 @@ type meetupdata struct {
 }
 
 //fetching details of meetup of the group's url from Meetup API
-func getMeetups(url string) {
+func getMeetups(url string, ID int64) {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatalln(err)
+		sendErrorToChan(err, ID, "Error when retrieving url:"+url)
+		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		sendErrorToChan(err, ID, "Error when parsing body of url:"+url)
+		return
 	}
 	var meetups []meetuplist
 	json.Unmarshal([]byte(body), &meetups)
@@ -75,28 +77,33 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		//converting the arguments into integers to pass them to time.Date
 		day, err := strconv.Atoi(separatedDateStr[0])
 		if err != nil {
-			log.Fatalln(err)
+			sendErrorToChan(err, ID, "Couldn't convert the day, please try again")
+			return
 		}
 		month, err := strconv.Atoi(separatedDateStr[1])
 		if err != nil {
-			log.Fatalln(err)
+			sendErrorToChan(err, ID, "Couldn't convert the month, please try again")
+			return
 		}
 		year, err := strconv.Atoi(separatedDateStr[2])
 		if err != nil {
-			log.Fatalln(err)
+			sendErrorToChan(err, ID, "Couldn't convert the year, please try again")
+			return
 		}
 		hour, err := strconv.Atoi(separatedHourStr[0])
 		if err != nil {
-			log.Fatalln(err)
+			sendErrorToChan(err, ID, "Couldn't convert the hour, please try again")
+			return
 		}
 		minutes, err := strconv.Atoi(separatedHourStr[1])
 		if err != nil {
-			log.Fatalln(err)
+			sendErrorToChan(err, ID, "Couldn't convert the minute, please try again")
+			return
 		}
 		location, err := time.LoadLocation("Asia/Kolkata")
 		if err != nil {
-			log.Print(err)
-			bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone, please try again"))
+			sendErrorToChan(err, ID, "Couldn't detect the timezone, please try again")
+			return
 		}
 		data := meetupdata{
 			Name:  args[1],
@@ -105,11 +112,13 @@ func addmeetup(ID int64, msgtext string, client mongo.Client) {
 		}
 		_, err = collection.DeleteMany(context.TODO(), bson.D{{}})
 		if err != nil {
-			log.Fatal(err)
+			sendErrorToChan(err, ID, "Cannot DeleteMany")
+			return
 		}
 		_, err = collection.InsertOne(context.TODO(), data)
 		if err != nil {
-			log.Fatal(err)
+			sendErrorToChan(err, ID, "Cannot inser one")
+			return
 		}
 		bot.Send(tbot.NewMessage(ID, "Meetup added successfully."))
 
@@ -137,8 +146,8 @@ func nextmeetup(ID int64, client mongo.Client) {
 	var data meetupdata
 	err := collection.FindOne(context.TODO(), bson.M{}).Decode(&data)
 	if err != nil {
-		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "No meetup scheduled."))
+		sendErrorToChan(err, ID, "No meetup scheduled.")
+		return
 	} else {
 		//the string inside Format method is a sample string to specify the display
 		//format of meetupTimeString
@@ -150,8 +159,8 @@ func nextmeetup(ID int64, client mongo.Client) {
 	}
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
-		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while saving the meetup, please try again"))
+		sendErrorToChan(err, ID, "Couldn't detect the timezone while saving the meetup, please try again")
+		return
 	}
 	//the string inside Format method is a sample string to specify the display
 	//format of meetupTimeString
@@ -171,8 +180,8 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 	}
 	location, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
-		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while processing the reminder, please try again"))
+		sendErrorToChan(err, ID, "Couldn't detect the timezone while processing the reminder, please try again")
+		return
 	}
 	//reminder will be sent only if the the meetup is today
 	if time.Now().In(location).Day() == data.Date.Day() {
@@ -187,4 +196,9 @@ func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
 		//stops the scheduler when reminder is sent
 		s1.Clear()
 	}
+}
+
+func sendErrorToChan(err error, ID int64, errorTxt string) {
+	log.Print(err)
+	bot.Send(tbot.NewMessage(ID, errorTxt))
 }

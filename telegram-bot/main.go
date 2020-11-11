@@ -3,19 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/anaskhan96/soup"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
+	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/anaskhan96/soup"
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
-	tbot "github.com/go-telegram-bot-api/telegram-bot-api"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var bot *tbot.BotAPI
@@ -47,7 +45,7 @@ func tweet() {
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
-		fmt.Println(tweet.IDStr)
+		log.Println(tweet.IDStr)
 		GroupID, _ := strconv.ParseInt(os.Getenv("OSDC_GROUP_ID"), 10, 64)
 
 		bot.Send(tbot.NewMessage(GroupID, "New Tweet Alert: \n https://twitter.com/osdcjiit/status/"+tweet.IDStr))
@@ -70,7 +68,7 @@ func xkcd(ID int64) {
 		for _, link := range links {
 			imglink := link.Attrs()["src"]
 			fullurl := "https:" + imglink
-			fmt.Println(fullurl)
+			log.Println(fullurl)
 			bot.Send(tbot.NewPhotoShare(ID, fullurl))
 		}
 	} else {
@@ -103,7 +101,7 @@ func dlmeetups(ID int64) {
 	urlnames := []string{"ilugdelhi", "pydelhi", "GDGNewDelhi", "gdgcloudnd", "Paytm-Build-for-India", "jslovers", "Gurgaon-Go-Meetup", "Mozilla_Delhi", "PyDataDelhi", "React-Delhi-NCR", "OWASP-Delhi-NCR-Chapter"}
 	for _, each := range urlnames {
 		url := "http://api.meetup.com/" + each + "/events"
-		getMeetups(url)
+		getMeetups(url, ID)
 	}
 	bot.Send(tbot.NewMessage(ID, finallist))
 }
@@ -167,7 +165,7 @@ func main() {
 	var err error
 	bot, err = tbot.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
 	if err != nil {
-		fmt.Println("error in auth")
+		log.Println("error in auth")
 		log.Panic(err)
 	}
 	bot.Debug = true
@@ -192,7 +190,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Println("Connected to MongoDB!")
 
 	// Running twitter stream concurrently
 	go tweet()

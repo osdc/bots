@@ -39,7 +39,9 @@ func savenote(ID int64, msgtext string, client mongo.Client) {
 			log.Print(data)
 			_, err := collection.InsertOne(context.TODO(), data)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
+				return
 			}
 			bot.Send(tbot.NewMessage(ID, "Note added successfully."))
 		} else {
@@ -56,8 +58,10 @@ func fetchallnotes(ID int64, client mongo.Client) {
 	ctx := context.Background()
 	cursor, err := collection.Find(context.TODO(), bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
 		defer cursor.Close(ctx)
+		return
 	} else {
 		// iterate over docs using Next()
 		for cursor.Next(ctx) {
@@ -65,7 +69,8 @@ func fetchallnotes(ID int64, client mongo.Client) {
 			var result notesData
 			err := cursor.Decode(&result)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
 			} else {
 				saved = saved + "\n&#9679; <code>" + result.Name + "</code>"
 			}
@@ -103,7 +108,9 @@ func deletenote(ID int64, msgtext string, client mongo.Client) {
 	args := strings.Fields(msgtext)
 	result, err := collection.DeleteOne(context.TODO(), bson.M{"name": args[1]})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		bot.Send(tbot.NewMessage(ID, "Error appears, please try again later"))
+		return
 	}
 	log.Print(result)
 	if result.DeletedCount == 0 {
