@@ -57,11 +57,12 @@ func tweet() {
 
 }
 
-func me(user string, ID int64, msgtext string) {
-
-	s := strings.SplitN(msgtext, " ", 2)
+func me(message *tbot.Message, ID int64) {
+	user := message.From.UserName
+	s := strings.SplitN(message.Text, " ", 2)
 	if len(s) == 2 {
 		bot.Send(tbot.NewMessage(ID, "* @"+user+" "+s[1]+" *"))
+		bot.DeleteMessage(tbot.NewDeleteMessage(ID, message.MessageID))
 	}
 }
 
@@ -262,8 +263,7 @@ func main() {
 			case "paste":
 				paste(ID, update.Message)
 			case "me":
-				me(update.Message.From.UserName, ID, update.Message.Text)
-				bot.DeleteMessage(tbot.NewDeleteMessage(ID, update.Message.MessageID))
+				me(update.Message, ID)
 			default:
 				{
 					msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
