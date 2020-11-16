@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/anaskhan96/soup"
@@ -54,6 +55,15 @@ func tweet() {
 	}
 	demux.HandleChan(stream.Messages)
 
+}
+//Sends message of whatever the user specifies they are doing after they type this command, then deletes the user's command message.
+func me(message *tbot.Message, ID int64) {
+	user := message.From.UserName
+	s := strings.SplitN(message.Text, " ", 2)
+	if len(s) == 2 {
+		bot.Send(tbot.NewMessage(ID, "* @"+user+" "+s[1]+" *"))
+		bot.DeleteMessage(tbot.NewDeleteMessage(ID, message.MessageID))
+	}
 }
 
 //scraping xkcd strip URL from its website with the help of a random generated integer and then sending it as a photo using NewPhotoShare Telegram API method.
@@ -252,6 +262,8 @@ func main() {
 				fetchnote(ID, update.Message.Text, *client)
 			case "paste":
 				paste(ID, update.Message)
+			case "me":
+				me(update.Message, ID)
 			default:
 				{
 					msg, err := bot.Send(tbot.NewMessage(ID, "I don't know this command"))
