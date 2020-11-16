@@ -56,7 +56,7 @@ func tweet() {
 	demux.HandleChan(stream.Messages)
 
 }
-
+//Sends message of whatever the user specifies they are doing after they type this command, then deletes the user's command message.
 func me(message *tbot.Message, ID int64) {
 	user := message.From.UserName
 	s := strings.SplitN(message.Text, " ", 2)
