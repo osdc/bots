@@ -140,26 +140,19 @@ func nextmeetup(ID int64, client mongo.Client) {
 		log.Print(err)
 		bot.Send(tbot.NewMessage(ID, "No meetup scheduled."))
 	} else {
+		location, err := time.LoadLocation("Asia/Kolkata")
+		if err != nil {
+			log.Print(err)
+			bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while saving the meetup, please try again"))
+		}
 		//the string inside Format method is a sample string to specify the display
 		//format of meetupTimeString
-		timeString := data.Date.Local().Format("Mon _2 Jan 2006")
+		timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
 		nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
 			data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
-			data.Date.Local().Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
+			data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
 		bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 	}
-	location, err := time.LoadLocation("Asia/Kolkata")
-	if err != nil {
-		log.Print(err)
-		bot.Send(tbot.NewMessage(ID, "Couldn't detect the timezone while saving the meetup, please try again"))
-	}
-	//the string inside Format method is a sample string to specify the display
-	//format of meetupTimeString
-	timeString := data.Date.In(location).Format("Mon _2 Jan 2006")
-	nxtMeetupData := "Details of next OSDC Meetup :" + "\n" + "Title -" + "\t" +
-		data.Name + "\n" + "Date -" + "\t" + timeString + "\n" + "Time -" + "\t" +
-		data.Date.In(location).Format("15:04") + "\n" + "Venue -" + "\t" + data.Venue
-	bot.Send(tbot.NewMessage(ID, nxtMeetupData))
 }
 
 func reminder(ID int64, client mongo.Client, s1 *gocron.Scheduler) {
