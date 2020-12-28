@@ -229,6 +229,10 @@ func main() {
 					text:    "Unflip Table",
 					message: `┬─┬ ノ( ゜-゜ノ)`,
 				},
+				{
+					text:    "Smirk",
+					message: `(˵ ͡° ͜ʖ ͡°˵)`,
+				},
 			}
 
 			for _, art := range InlineArt {
