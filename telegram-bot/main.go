@@ -56,6 +56,7 @@ func tweet() {
 	demux.HandleChan(stream.Messages)
 
 }
+
 //Sends message of whatever the user specifies they are doing after they type this command, then deletes the user's command message.
 func me(message *tbot.Message, ID int64) {
 	user := message.From.UserName
@@ -208,6 +209,45 @@ func main() {
 	go tweet()
 
 	for update := range updates {
+
+		if update.InlineQuery != nil {
+			var results []interface{}
+			type inlineArt struct {
+				text    string
+				message string
+			}
+			InlineArt := []inlineArt{
+				{
+					text:    "Shrug",
+					message: `¯\_(ツ)_/¯`,
+				},
+				{
+					text:    "Flip Table",
+					message: `(╯°□°）╯︵ ┻━┻`,
+				},
+				{
+					text:    "Unflip Table",
+					message: `┬─┬ ノ( ゜-゜ノ)`,
+				},
+			}
+
+			for _, art := range InlineArt {
+				article := tbot.NewInlineQueryResultArticle(art.text, art.text, art.message)
+				article.Description = art.message
+				results = append(results, article)
+			}
+
+			InlineConfig := tbot.InlineConfig{
+				InlineQueryID: update.InlineQuery.ID,
+				Results:       results,
+				IsPersonal:    true,
+				CacheTime:     0,
+			}
+
+			if _, err := bot.AnswerInlineQuery(InlineConfig); err != nil {
+				log.Println(err)
+			}
+		}
 		if update.Message == nil {
 			continue
 		}
