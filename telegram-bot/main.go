@@ -126,7 +126,7 @@ func welcome(user tbot.User, ID int64) {
 		"a bot made by the geeks for the geeks.",
 		"an Autobot on Earth to promote open source.",
 		"a distant cousin of the mars rover.",
-		"a friendly bot written in Golang.",
+		"a friendly bot written in Go.",
 	)
 	var quesSlice = make([]string, 0)
 	quesSlice = append(quesSlice,
