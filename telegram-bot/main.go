@@ -128,6 +128,13 @@ func welcome(user tbot.User, ID int64) {
 		"an Autobot on Earth to promote open source.",
 		"a distant cousin of the mars rover.",
 		"a friendly bot written in Go.",
+		"connect with us",
+		ButtonLinks(ID, "OSDC-group", "https://t.me/jiitosdc", "Hello , I'm OSDC Bot, Use /help to know more. To join OSDC group:"),
+		ButtonLinks(ID, "Github", "https://github.com/osdc", "Checkout our OSDC projects and feel free to contribute!"),
+		ButtonLinks((ID, "our website", "https://osdc.netlify.com", "Website:"),
+		"If you are willing to contribute go through our code of conduct",
+		ButtonLinks((ID, "CODE-OF-CONDUCT", "https://github.com/osdc/bots/blob/master/CONTRIBUTING.md", "COC:"),
+		
 	)
 	var quesSlice = make([]string, 0)
 	quesSlice = append(quesSlice,
